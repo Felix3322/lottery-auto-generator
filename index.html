@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Raffle Ticket Generator</title>
+  <style>
+    :root {
+      --page-bg: #ece7d9;
+      --panel-bg: rgba(255, 250, 237, 0.94);
+      --panel-border: rgba(101, 81, 27, 0.18);
+      --text-main: #2f2917;
+      --text-muted: #6d6140;
+      --accent: #715a15;
+      --accent-soft: rgba(113, 90, 21, 0.12);
+      --ticket-surface: #ebd762;
+      --card-shadow: rgba(92, 71, 18, 0.2);
+      --font-ui: "Bahnschrift", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --font-condensed: "Bahnschrift SemiCondensed", "Arial Narrow", "Roboto Condensed", "Segoe UI", Arial, sans-serif;
+      --font-display: "Arial Black", "Bahnschrift SemiBold SemiConden", "Segoe UI Black", Impact, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--page-bg); color: var(--text-main); font-family: var(--font-ui), sans-serif; }
+    body { padding: 24px; }
+    .app-shell { width: min(100%, 1680px); margin: 0 auto; display: grid; grid-template-columns: minmax(320px, 430px) minmax(0, 1fr); gap: 24px; align-items: start; }
+    .panel, .preview-shell { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 22px; backdrop-filter: blur(12px); box-shadow: 0 24px 60px rgba(72, 56, 18, 0.12); }
+    .panel { padding: 22px; position: sticky; top: 24px; }
+    .section + .section { margin-top: 22px; padding-top: 22px; border-top: 1px solid rgba(101, 81, 27, 0.1); }
+    .section h2 { margin: 0 0 14px; font-size: 18px; letter-spacing: 0.04em; }
+    .section p { margin: 8px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+    .field-grid { display: grid; gap: 14px; }
+    .field-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    label { display: grid; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-main); }
+    input, textarea, select, button { font: inherit; }
+    input, textarea, select { width: 100%; border: 1px solid rgba(110, 90, 34, 0.18); border-radius: 14px; padding: 12px 14px; background: rgba(255, 255, 255, 0.86); color: var(--text-main); outline: none; transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+    input:focus, textarea:focus, select:focus { border-color: rgba(113, 90, 21, 0.55); box-shadow: 0 0 0 4px rgba(113, 90, 21, 0.12); background: #fff; }
+    textarea { resize: vertical; min-height: 82px; }
+    .preview-shell { padding: 20px; }
+    .preview-topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .preview-title { display: flex; flex-direction: column; gap: 4px; }
+    .preview-title h1 { margin: 0; font-size: 24px; letter-spacing: 0.03em; }
+    .preview-title span, .status-line { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+    .nav-group, .action-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .action-row { margin-top: 18px; display: grid; gap: 12px; }
+    button { border: 0; border-radius: 999px; padding: 11px 18px; font-weight: 700; cursor: pointer; color: #fff7e1; background: linear-gradient(135deg, #725a17, #5c4810); box-shadow: 0 12px 25px rgba(92, 72, 16, 0.18); transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease; }
+    button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 16px 32px rgba(92, 72, 16, 0.22); }
+    button.secondary { color: var(--text-main); background: rgba(113, 90, 21, 0.1); box-shadow: none; }
+    button.ghost { color: var(--accent); background: rgba(113, 90, 21, 0.08); box-shadow: none; }
+    button:disabled { cursor: default; opacity: 0.45; transform: none; box-shadow: none; }
+    .preview-stage { padding: 22px; border-radius: 20px; background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 38%), linear-gradient(145deg, rgba(135, 112, 42, 0.12), rgba(255, 255, 255, 0.65)); overflow-x: auto; }
+    .ticket-frame { min-width: 780px; }
+    .ticket-frame svg { width: 100%; height: auto; display: block; aspect-ratio: 3 / 1; background: var(--ticket-surface); border-radius: 18px; box-shadow: 0 25px 60px var(--card-shadow); }
+    .preview-meta { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+    .status-box { margin-top: 18px; padding: 14px 16px; border-radius: 16px; background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(113, 90, 21, 0.08); }
+    .status-box strong { display: block; margin-bottom: 6px; font-size: 14px; }
+    .status-box p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+    .caption { margin-top: 10px; color: var(--text-muted); font-size: 12px; line-height: 1.55; }
+    @media (max-width: 1180px) { .app-shell { grid-template-columns: 1fr; } .panel { position: static; } }
+    @media (max-width: 720px) { body { padding: 14px; } .panel, .preview-shell { padding: 16px; border-radius: 18px; } .field-grid.compact { grid-template-columns: 1fr; } .ticket-frame { min-width: 640px; } .preview-stage { padding: 14px; } }
+    @media print {
+      body { padding: 0; background: white; }
+      .panel, .preview-topbar, .status-box, .caption { display: none !important; }
+      .preview-shell { border: 0; box-shadow: none; background: transparent; padding: 0; }
+      .preview-stage { padding: 0; background: transparent; }
+      .ticket-frame { min-width: 0; }
+      .ticket-frame svg { box-shadow: none; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+<main class="app-shell">
+  <aside class="panel">
+    <form id="configForm">
+      <section class="section">
+        <h2>Ticket Settings</h2>
+        <div class="field-grid">
+          <label>Background Color<select name="backgroundTheme"><option value="yellow">Yellow (Current)</option><option value="white">White (Print)</option></select></label>
+          <label>School / Event Name (One line per row)<textarea name="schoolName">Clayton Brown Public School
+&amp; Hearst High School</textarea></label>
+          <label>Permit Number<input name="permitNumber" value="#M858753"></label>
+          <label>Prize Text<input name="prizeAmount" value="$2000"></label>
+          <label>Description Text (Up to 2 lines)<textarea name="descriptionText">Proceeds to be used for a school trip
+One (1) lucky winner will receive half of the proceeds of ticket sales</textarea></label>
+          <label>Draw Date Line<input name="drawDateLine" value="Draw date: March 5, 2025 at 2:00 p.m."></label>
+          <label>Draw Location Line<input name="drawLocationLine" value="at Clayton Brown Public School &amp; Hearst High School"></label>
+          <label>Footer Text<input name="footerSummary" value="$2 each | 2000 tickets | Permit: #M858753"></label>
+        </div>
+        <p>These fields update both the stub and the main ticket. Background color also affects printing and image export.</p>
+      </section>
+      <section class="section">
+        <h2>Batch Numbers</h2>
+        <div class="field-grid compact">
+          <label>Number Prefix<input name="numberPrefix" data-batch-field value=""></label>
+          <label>Number Suffix<input name="numberSuffix" data-batch-field value=""></label>
+          <label>Start Number<input name="numberStart" type="number" data-batch-field min="0" step="1" value="567"></label>
+          <label>End Number<input name="numberEnd" type="number" data-batch-field min="0" step="1" value="567"></label>
+          <label>Zero Padding<input name="numberPadding" type="number" data-batch-field min="0" max="12" step="1" value="4"></label>
+          <label>Preview Position<input id="previewPositionInput" type="number" min="1" step="1" value="1"></label>
+        </div>
+        <div class="field-grid" style="margin-top: 14px;">
+          <label>Custom Number List (Optional, split by line or comma)<textarea name="customNumbers" data-batch-field placeholder="e.g. 0001, 0002, 0003"></textarea></label>
+        </div>
+        <p>If you fill in a custom number list, it takes priority. Otherwise numbers are generated from the start and end range.</p>
+      </section>
+      <section class="section">
+        <h2>Output Actions</h2>
+        <div class="action-row">
+          <div class="action-group"><button type="button" id="printCurrentBtn">Print Current Preview</button><button type="button" id="printBatchBtn">Print Current Batch</button></div>
+          <div class="action-group"><button type="button" class="secondary" id="exportCurrentBtn">Export Current PNG</button><button type="button" class="secondary" id="exportBatchBtn">Export Batch PNG</button></div>
+        </div>
+        <p id="actionStatus" class="status-line">When exporting a batch of PNG files, the browser may ask for permission to allow multiple downloads.</p>
+      </section>
+    </form>
+  </aside>
+  <section class="preview-shell">
+    <div class="preview-topbar">
+      <div class="preview-title"><h1>Ticket Preview</h1><span>Editing the left panel updates the preview in real time. If you print this page directly from the browser, only the current preview ticket is printed.</span></div>
+      <div class="nav-group"><button type="button" class="ghost" id="prevBtn">Previous</button><div class="preview-meta"><span id="previewMeta">Preview 1 / 1</span><span id="currentNumberBadge">0567</span></div><button type="button" class="ghost" id="nextBtn">Next</button></div>
+    </div>
+    <div class="preview-stage"><div class="ticket-frame" id="ticketPreview"></div></div>
+    <div class="status-box"><strong id="batchSummaryTitle">Current Batch</strong><p id="batchSummaryText">Generated 1 number. Ready to print or export.</p></div>
+    <div class="caption">PNG export uses 3000 × 1000 pixels by default. The current batch is capped at 500 tickets to avoid browser slowdowns during rendering or downloads.</div>
+  </section>
+</main>
+<script>
+  const MAX_BATCH_SIZE = 500;
+  const THEME_PRESETS = {
+    yellow: { pageBg: "#ece7d9", ticketSurface: "#ebd762", shadow: "rgba(92, 71, 18, 0.2)", paperTop: "#eddc68", paperBottom: "#e2cb58", separator: "#8d7a35", textDark: "#2b2818", textMuted: "#6f602d", lineSoft: "#c8b35a", lineStrong: "#75652e", stubNumber: "#3c3418", footerNumber: "#6e602e", panelStart: "#5a4d1b", panelMid: "#736328", panelEnd: "#4d4119", highlight: "#f1df80", prizeStroke: "#ceb65b", prizeCaption: "#f0d95a", prizeAmount: "#ffd246", raffleMain: "#f3efdf", raffleSub: "#f2d34d" },
+    white: { pageBg: "#f2f2ee", ticketSurface: "#ffffff", shadow: "rgba(58, 48, 22, 0.12)", paperTop: "#ffffff", paperBottom: "#f5f4ef", separator: "#a99f86", textDark: "#2f2a20", textMuted: "#6a6050", lineSoft: "#d8d0bc", lineStrong: "#8c8062", stubNumber: "#302b22", footerNumber: "#615948", panelStart: "#4c4330", panelMid: "#6a5d3e", panelEnd: "#423826", highlight: "#f2e8b8", prizeStroke: "#c6b07b", prizeCaption: "#f3de7b", prizeAmount: "#ffd246", raffleMain: "#f4f0e3", raffleSub: "#efd16f" }
+  };
+  const state = { previewIndex: 0, generatedNumbers: [], batchMessage: "", form: null };
+  const form = document.getElementById("configForm");
+  const preview = document.getElementById("ticketPreview");
+  const previewMeta = document.getElementById("previewMeta");
+  const currentNumberBadge = document.getElementById("currentNumberBadge");
+  const batchSummaryTitle = document.getElementById("batchSummaryTitle");
+  const batchSummaryText = document.getElementById("batchSummaryText");
+  const actionStatus = document.getElementById("actionStatus");
+  const previewPositionInput = document.getElementById("previewPositionInput");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const printCurrentBtn = document.getElementById("printCurrentBtn");
+  const printBatchBtn = document.getElementById("printBatchBtn");
+  const exportCurrentBtn = document.getElementById("exportCurrentBtn");
+  const exportBatchBtn = document.getElementById("exportBatchBtn");
+
+  const escapeXml = (value = "") => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+  const splitLines = (value, fallback, maxLines = 2) => { const lines = String(value || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean).slice(0, maxLines); return lines.length ? lines : fallback; };
+  const sanitizeNumber = (value, fallback) => { const parsed = Number.parseInt(value, 10); return Number.isFinite(parsed) ? parsed : fallback; };
+  const sanitizeFilename = (value) => String(value || "ticket").replace(/[<>:"/\\|?*\u0000-\u001f]+/g, "_").replace(/\s+/g, "_").slice(0, 80) || "ticket";
+  const pause = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
+  const attrString = (attributes) => Object.entries(attributes).filter(([, value]) => value !== undefined && value !== null && value !== "").map(([key, value]) => `${key}="${escapeXml(value)}"`).join(" ");
+  const renderTextLines = (lines, options) => lines.map((line, index) => `<text ${attrString({ x: options.x, y: options.y + (index * options.lineHeight), class: options.className, fill: options.fill, "font-size": options.fontSize, "font-weight": options.fontWeight, "letter-spacing": options.letterSpacing, "text-anchor": options.textAnchor, "data-max-width": options.maxWidth })}>${escapeXml(line)}</text>`).join("");
+  const collectFormState = () => ({ backgroundTheme: form.backgroundTheme.value, schoolName: form.schoolName.value, permitNumber: form.permitNumber.value.trim(), prizeAmount: form.prizeAmount.value.trim(), descriptionText: form.descriptionText.value, drawDateLine: form.drawDateLine.value.trim(), drawLocationLine: form.drawLocationLine.value.trim(), footerSummary: form.footerSummary.value.trim(), numberPrefix: form.numberPrefix.value, numberSuffix: form.numberSuffix.value, numberStart: form.numberStart.value, numberEnd: form.numberEnd.value, numberPadding: form.numberPadding.value, customNumbers: form.customNumbers.value });
+  const buildNumberList = (formState) => {
+    const customNumbers = formState.customNumbers.split(/[\n,，;；]+/).map((token) => token.trim()).filter(Boolean);
+    if (customNumbers.length) {
+      const numbers = customNumbers.slice(0, MAX_BATCH_SIZE);
+      return { numbers, message: customNumbers.length > MAX_BATCH_SIZE ? `Detected ${customNumbers.length} custom numbers. Only the first ${MAX_BATCH_SIZE} were kept.` : `Using the custom number list with ${numbers.length} item(s).` };
+    }
+    const start = sanitizeNumber(formState.numberStart, 1);
+    const end = sanitizeNumber(formState.numberEnd, start);
+    const padding = Math.max(0, sanitizeNumber(formState.numberPadding, 0));
+    const prefix = formState.numberPrefix || "";
+    const suffix = formState.numberSuffix || "";
+    const ascending = start <= end;
+    const theoreticalCount = Math.abs(end - start) + 1;
+    const numbers = [];
+    for (let value = start; ascending ? value <= end : value >= end; value += ascending ? 1 : -1) {
+      numbers.push(`${prefix}${String(value).padStart(padding, "0")}${suffix}`);
+      if (numbers.length >= MAX_BATCH_SIZE) break;
+    }
+    return { numbers, message: theoreticalCount > MAX_BATCH_SIZE ? `The selected range produces ${theoreticalCount} numbers. Only the first ${MAX_BATCH_SIZE} were kept to avoid browser slowdowns.` : `Generated ${numbers.length} number(s) from the selected range.` };
+  };
+  const buildTicketSvg = (formState, ticketNumber) => {
+    const theme = THEME_PRESETS[formState.backgroundTheme] || THEME_PRESETS.yellow;
+    const schoolLines = splitLines(formState.schoolName, ["Clayton Brown Public School", "& Hearst High School"], 2);
+    const descriptionLines = splitLines(formState.descriptionText, ["Proceeds to be used for a school trip", "One (1) lucky winner will receive half of the proceeds of ticket sales"], 2);
+    const permitNumber = formState.permitNumber || "#M858753";
+    const prizeAmount = formState.prizeAmount || "$2000";
+    const drawDateLine = formState.drawDateLine || "Draw date: March 5, 2025 at 2:00 p.m.";
+    const drawLocationLine = formState.drawLocationLine || "at Clayton Brown Public School & Hearst High School";
+    const footerSummary = formState.footerSummary || "$2 each | 2000 tickets | Permit: #M858753";
+    const currentNumber = ticketNumber || "0001";
+    return `<svg class="ticket-svg" viewBox="0 0 3000 1000" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="paperFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${theme.paperTop}"/><stop offset="100%" stop-color="${theme.paperBottom}"/></linearGradient><linearGradient id="panelFill" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="${theme.panelStart}"/><stop offset="40%" stop-color="${theme.panelMid}"/><stop offset="100%" stop-color="${theme.panelEnd}"/></linearGradient></defs><rect x="0" y="0" width="3000" height="1000" rx="10" fill="url(#paperFill)"/><line x1="1044" y1="40" x2="1044" y2="960" stroke="${theme.separator}" stroke-width="5" stroke-dasharray="10 18" opacity="0.5"/><g id="stub"><image href="./school_logo.png" x="40" y="46" width="90" height="90"/>${renderTextLines(schoolLines, { x: 146, y: 82, lineHeight: 50, className: "brand condensed", fill: theme.textDark, fontSize: 46, fontWeight: 700, maxWidth: 760 })}<text x="40" y="184" font-size="44" fill="${theme.stubNumber}" opacity="0.86" data-max-width="610">Permit: ${escapeXml(permitNumber)}</text><text x="760" y="184" class="condensed" font-size="92" font-weight="700" fill="${theme.stubNumber}" data-max-width="200">${escapeXml(currentNumber)}</text><line x1="40" y1="212" x2="948" y2="212" stroke="${theme.lineSoft}" stroke-width="4"/><g fill="${theme.textDark}" font-size="48"><text x="74" y="360">Name:</text><line x1="210" y1="362" x2="948" y2="362" stroke="${theme.lineStrong}" stroke-width="5"/><line x1="74" y1="480" x2="948" y2="480" stroke="${theme.lineStrong}" stroke-width="5"/><text x="74" y="600">Address:</text><line x1="265" y1="602" x2="948" y2="602" stroke="${theme.lineStrong}" stroke-width="5"/><line x1="74" y1="720" x2="948" y2="720" stroke="${theme.lineStrong}" stroke-width="5"/><text x="74" y="840">Phone:</text><line x1="225" y1="842" x2="948" y2="842" stroke="${theme.lineStrong}" stroke-width="5"/></g></g><g id="main"><image href="./school_logo.png" x="1118" y="40" width="200" height="200"/>${renderTextLines(schoolLines, { x: 1340, y: 110, lineHeight: 82, className: "brand condensed", fill: theme.textDark, fontSize: 72, fontWeight: 700, letterSpacing: 1.5, maxWidth: 1460 })}${renderTextLines(descriptionLines, { x: 2860, y: 165, lineHeight: 50, className: "condensed", fill: theme.textMuted, fontSize: 42, fontWeight: 500, letterSpacing: 1, textAnchor: "end", maxWidth: 930 })}<rect x="1330" y="250" width="1530" height="10" rx="5" fill="${theme.lineSoft}" opacity="0.75"/><g id="feature-panel"><rect x="1116" y="300" width="1760" height="300" fill="url(#panelFill)"/><path d="M2200 600 L2420 300 H2520 L2300 600 Z" fill="${theme.highlight}" opacity="0.15"/><rect x="1140" y="335" width="1020" height="230" fill="none" stroke="${theme.prizeStroke}" stroke-width="9"/><text x="1175" y="395" class="condensed" font-size="56" font-weight="700" fill="${theme.prizeCaption}" letter-spacing="1">MAXIMUM VALUE OF</text><text class="display" x="1175" y="535" font-size="180" font-weight="900" fill="${theme.prizeAmount}" letter-spacing="-2" data-max-width="950">${escapeXml(prizeAmount)}</text><g text-anchor="middle"><text class="display" x="2560" y="505" font-size="210" font-weight="900" fill="${theme.raffleMain}" letter-spacing="-6">50/50</text><text class="condensed" x="2560" y="575" font-size="62" font-weight="700" fill="${theme.raffleSub}" letter-spacing="2">RAFFLE DRAW</text></g></g><g font-size="54" fill="${theme.textDark}" class="condensed"><text x="1122" y="685" letter-spacing="1.2" data-max-width="1450">${escapeXml(drawDateLine)}</text><text x="1122" y="755" letter-spacing="0.8" data-max-width="1450">${escapeXml(drawLocationLine)}</text><text x="1122" y="825" opacity="0.92" letter-spacing="1.5" data-max-width="1450">${escapeXml(footerSummary)}</text></g><text class="condensed" x="2700" y="825" font-size="105" font-weight="700" fill="${theme.footerNumber}" data-max-width="220">${escapeXml(currentNumber)}</text></g></svg>`;
+  };
+  const fitTextToWidth = (node) => { const maxWidth = Number(node.dataset.maxWidth || 0); if (!maxWidth || typeof node.getComputedTextLength !== "function") return; let fontSize = Number(node.getAttribute("font-size")) || Number(window.getComputedStyle(node).fontSize.replace("px", "")); while (node.getComputedTextLength() > maxWidth && fontSize > 24) { fontSize -= 1; node.setAttribute("font-size", String(fontSize)); } };
+  const fitPreviewText = () => preview.querySelectorAll("[data-max-width]").forEach(fitTextToWidth);
+  const updateThemeVars = (themeKey) => { const theme = THEME_PRESETS[themeKey] || THEME_PRESETS.yellow; document.documentElement.style.setProperty("--page-bg", theme.pageBg); document.documentElement.style.setProperty("--ticket-surface", theme.ticketSurface); document.documentElement.style.setProperty("--card-shadow", theme.shadow); };
+  const syncPreviewPositionInput = () => { const count = state.generatedNumbers.length || 1; previewPositionInput.max = String(count); previewPositionInput.value = String(Math.min(state.previewIndex + 1, count)); };
+  const renderPreview = () => { const currentNumber = state.generatedNumbers[state.previewIndex] || state.generatedNumbers[0] || "0001"; preview.innerHTML = buildTicketSvg(state.form, currentNumber); fitPreviewText(); const total = state.generatedNumbers.length || 1; previewMeta.textContent = `Preview ${Math.min(state.previewIndex + 1, total)} / ${total}`; currentNumberBadge.textContent = currentNumber; batchSummaryTitle.textContent = `Current Batch: ${total} ticket${total === 1 ? "" : "s"}`; batchSummaryText.textContent = state.batchMessage; prevBtn.disabled = total <= 1 || state.previewIndex === 0; nextBtn.disabled = total <= 1 || state.previewIndex >= total - 1; printCurrentBtn.disabled = total === 0; printBatchBtn.disabled = total === 0; exportCurrentBtn.disabled = total === 0; exportBatchBtn.disabled = total === 0; syncPreviewPositionInput(); };
+  const renderAll = ({ resetIndex = false } = {}) => { state.form = collectFormState(); updateThemeVars(state.form.backgroundTheme); const { numbers, message } = buildNumberList(state.form); state.generatedNumbers = numbers.length ? numbers : ["0001"]; state.batchMessage = message || "Generated 1 number."; if (resetIndex) state.previewIndex = 0; if (state.previewIndex >= state.generatedNumbers.length) state.previewIndex = Math.max(0, state.generatedNumbers.length - 1); renderPreview(); };
+  const createSvgBlobUrl = (svgMarkup) => URL.createObjectURL(new Blob([svgMarkup], { type: "image/svg+xml;charset=utf-8" }));
+  const svgToPngBlob = (svgMarkup) => new Promise((resolve, reject) => { const objectUrl = createSvgBlobUrl(svgMarkup); const image = new Image(); image.onload = () => { URL.revokeObjectURL(objectUrl); const canvas = document.createElement("canvas"); canvas.width = 3000; canvas.height = 1000; const context = canvas.getContext("2d"); if (!context) { reject(new Error("The browser could not create a PNG canvas.")); return; } context.clearRect(0, 0, canvas.width, canvas.height); context.drawImage(image, 0, 0, canvas.width, canvas.height); canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("PNG export failed.")), "image/png"); }; image.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("SVG to image conversion failed. If you opened the page as a local file, try serving it through a local static server before exporting.")); }; image.src = objectUrl; });
+  const downloadBlob = (blob, filename) => { const link = document.createElement("a"); const url = URL.createObjectURL(blob); link.href = url; link.download = filename; document.body.append(link); link.click(); link.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 4000); };
+  const getSnapshotForOutput = () => { renderAll(); return { form: { ...state.form }, numbers: [...state.generatedNumbers] }; };
+  const openPrintWindow = (numbers) => { const snapshot = getSnapshotForOutput(); const tickets = numbers.map((number) => `<section class="print-ticket">${buildTicketSvg(snapshot.form, number)}</section>`).join(""); const printWindow = window.open("", "_blank", "noopener,noreferrer"); if (!printWindow) { actionStatus.textContent = "The browser blocked the print window. Allow pop-ups for this page and try again."; return; } printWindow.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Raffle Ticket Print</title><style>* { box-sizing: border-box; } body { margin: 0; padding: 0.18in; background: white; font-family: "Bahnschrift", "Segoe UI", Arial, sans-serif; } .print-ticket { break-after: page; page-break-after: always; } .print-ticket:last-child { break-after: auto; page-break-after: auto; } svg { width: 100%; height: auto; display: block; } @page { size: landscape; margin: 0.2in; }</style></head><body>${tickets}</body></html>`); printWindow.document.close(); printWindow.focus(); printWindow.addEventListener("load", () => { window.setTimeout(() => printWindow.print(), 250); }); actionStatus.textContent = `Opened a print window with ${numbers.length} ticket(s).`; };
+  const exportNumbersAsPng = async (numbers) => { const snapshot = getSnapshotForOutput(); actionStatus.textContent = `Exporting ${numbers.length} PNG file(s)...`; exportCurrentBtn.disabled = true; exportBatchBtn.disabled = true; try { for (let index = 0; index < numbers.length; index += 1) { const number = numbers[index]; const blob = await svgToPngBlob(buildTicketSvg(snapshot.form, number)); downloadBlob(blob, `raffle-ticket-${sanitizeFilename(number)}.png`); actionStatus.textContent = `Exported ${index + 1} / ${numbers.length} PNG file(s).`; await pause(150); } actionStatus.textContent = `PNG export finished for ${numbers.length} ticket(s).`; } catch (error) { actionStatus.textContent = error instanceof Error ? error.message : "PNG export failed."; } finally { renderPreview(); } };
+  form.addEventListener("input", (event) => { const target = event.target; if (!(target instanceof HTMLElement)) return; renderAll({ resetIndex: target.hasAttribute("data-batch-field") }); });
+  prevBtn.addEventListener("click", () => { if (state.previewIndex <= 0) return; state.previewIndex -= 1; renderPreview(); });
+  nextBtn.addEventListener("click", () => { if (state.previewIndex >= state.generatedNumbers.length - 1) return; state.previewIndex += 1; renderPreview(); });
+  previewPositionInput.addEventListener("change", () => { const total = state.generatedNumbers.length || 1; const rawValue = sanitizeNumber(previewPositionInput.value, 1); state.previewIndex = Math.min(Math.max(rawValue, 1), total) - 1; renderPreview(); });
+  printCurrentBtn.addEventListener("click", () => { const snapshot = getSnapshotForOutput(); const current = snapshot.numbers[state.previewIndex] || snapshot.numbers[0]; openPrintWindow([current]); });
+  printBatchBtn.addEventListener("click", () => { const snapshot = getSnapshotForOutput(); openPrintWindow(snapshot.numbers); });
+  exportCurrentBtn.addEventListener("click", async () => { const snapshot = getSnapshotForOutput(); const current = snapshot.numbers[state.previewIndex] || snapshot.numbers[0]; await exportNumbersAsPng([current]); });
+  exportBatchBtn.addEventListener("click", async () => { const snapshot = getSnapshotForOutput(); await exportNumbersAsPng(snapshot.numbers); });
+  renderAll({ resetIndex: true });
+</script>
+</body>
+</html>

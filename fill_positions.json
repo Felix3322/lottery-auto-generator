@@ -1,0 +1,163 @@
+{
+  "source_ticket_ratio_note": "按原图票身四角重新估算后，源票更接近 3.126:1，不是 3:1。你如果已经有模板，优先使用 normalized_fields，不要再用旧的 3000x1000 绝对坐标。",
+  "ratio_correction": {
+    "detected_from_source": "约 5285 / 1690 ≈ 3.126",
+    "recommended_canvas": {
+      "width": 3126,
+      "height": 1000
+    },
+    "old_absolute_width": 3000,
+    "x_scale_from_old_absolute": 1.042,
+    "formula": "newX = oldX * 1.042, newWidth = oldWidth * 1.042"
+  },
+  "canvas": {
+    "width": 3126,
+    "height": 1000,
+    "ratio": 3.126
+  },
+  "fields": {
+    "logo_left": { "x": 42, "y": 36, "w": 118, "h": 118 },
+    "school_name_left": {
+      "x": 198,
+      "y": 20,
+      "w": 700,
+      "h": 150,
+      "fontSize": 69,
+      "lineHeight": 78
+    },
+    "permit_left": {
+      "x": 40,
+      "y": 145,
+      "w": 620,
+      "h": 70,
+      "fontSize": 68
+    },
+    "ticket_number_left": {
+      "x": 760,
+      "y": 110,
+      "w": 180,
+      "h": 120,
+      "fontSize": 112,
+      "align": "center"
+    },
+    "name_line_1": { "x1": 196, "y1": 380, "x2": 995, "y2": 380 },
+    "name_line_2": { "x1": 74, "y1": 540, "x2": 995, "y2": 540 },
+    "address_line_1": { "x1": 258, "y1": 638, "x2": 995, "y2": 638 },
+    "address_line_2": { "x1": 74, "y1": 794, "x2": 995, "y2": 794 },
+    "phone_line": { "x1": 206, "y1": 896, "x2": 995, "y2": 896 },
+    "name_fill_box": { "x": 196, "y": 300, "w": 800, "h": 190 },
+    "address_fill_box": { "x": 258, "y": 565, "w": 740, "h": 190 },
+    "phone_fill_box": { "x": 206, "y": 845, "w": 790, "h": 75 },
+
+    "logo_main": { "x": 1118, "y": 30, "w": 122, "h": 122 },
+    "school_name_main": {
+      "x": 1292,
+      "y": 30,
+      "w": 1450,
+      "h": 90,
+      "fontSize": 74
+    },
+    "purpose_line": {
+      "x": 1450,
+      "y": 98,
+      "w": 1275,
+      "h": 50,
+      "fontSize": 53,
+      "align": "center"
+    },
+    "winner_line": {
+      "x": 1340,
+      "y": 166,
+      "w": 1495,
+      "h": 58,
+      "fontSize": 54,
+      "align": "center"
+    },
+    "highlight_bar": { "x": 1114, "y": 246, "w": 1040, "h": 34 },
+    "prize_panel_left": {
+      "x": 1114,
+      "y": 294,
+      "w": 694,
+      "h": 300
+    },
+    "max_value_text": {
+      "x": 1192,
+      "y": 350,
+      "w": 520,
+      "h": 60,
+      "fontSize": 84
+    },
+    "prize_amount": {
+      "x": 1260,
+      "y": 390,
+      "w": 540,
+      "h": 200,
+      "fontSize": 186
+    },
+    "ratio_left_50": {
+      "x": 1816,
+      "y": 270,
+      "w": 320,
+      "h": 260,
+      "fontSize": 246
+    },
+    "ratio_right_50": {
+      "x": 2146,
+      "y": 210,
+      "w": 320,
+      "h": 260,
+      "fontSize": 246
+    },
+    "raffle_draw": {
+      "x": 2148,
+      "y": 485,
+      "w": 500,
+      "h": 78,
+      "fontSize": 78
+    },
+    "draw_date_line": {
+      "x": 1118,
+      "y": 620,
+      "w": 980,
+      "h": 62,
+      "fontSize": 62
+    },
+    "location_line": {
+      "x": 1118,
+      "y": 688,
+      "w": 1280,
+      "h": 62,
+      "fontSize": 62
+    },
+    "footer_line": {
+      "x": 1118,
+      "y": 758,
+      "w": 1180,
+      "h": 60,
+      "fontSize": 60
+    },
+    "ticket_number_right": {
+      "x": 2690,
+      "y": 730,
+      "w": 160,
+      "h": 100,
+      "fontSize": 88,
+      "align": "center"
+    }
+  },
+  "normalized_fields": {
+    "ticket_number_left": { "x": 0.2533, "y": 0.11, "w": 0.06, "h": 0.12 },
+    "ticket_number_right": { "x": 0.8967, "y": 0.73, "w": 0.0533, "h": 0.1 },
+    "permit_left": { "x": 0.0133, "y": 0.145, "w": 0.2067, "h": 0.07 },
+    "name_fill_box": { "x": 0.0653, "y": 0.3, "w": 0.2667, "h": 0.19 },
+    "address_fill_box": { "x": 0.086, "y": 0.565, "w": 0.2467, "h": 0.19 },
+    "phone_fill_box": { "x": 0.0687, "y": 0.845, "w": 0.2633, "h": 0.075 },
+    "school_name_main": { "x": 0.4307, "y": 0.03, "w": 0.4833, "h": 0.09 },
+    "purpose_line": { "x": 0.4833, "y": 0.098, "w": 0.425, "h": 0.05 },
+    "winner_line": { "x": 0.4467, "y": 0.166, "w": 0.4983, "h": 0.058 },
+    "prize_amount": { "x": 0.42, "y": 0.39, "w": 0.18, "h": 0.2 },
+    "draw_date_line": { "x": 0.3727, "y": 0.62, "w": 0.3267, "h": 0.062 },
+    "location_line": { "x": 0.3727, "y": 0.688, "w": 0.4267, "h": 0.062 },
+    "footer_line": { "x": 0.3727, "y": 0.758, "w": 0.3933, "h": 0.06 }
+  }
+}

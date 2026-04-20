@@ -1,0 +1,8 @@
+.idea/
+.edge-profile/
+.tmp/
+.vendor/
+.wheelhouse/
+
+Thumbs.db
+.DS_Store
