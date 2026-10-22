@@ -38,7 +38,7 @@ RAFFLE ISSUING AND IN-PERSON REDEMPTION
 WHAT THE FEATURES DO
 
 - Custom Secure Number-style lettering uses original FE-Schrift-inspired vector
-  digits, reverse type and stripes. It is not an official FE font and does not
+  digits, enlarged reverse type and subdued interlaced loop engraving. It is not an official FE font and does not
   authenticate tickets by itself. Ordinary permit labels remain on both halves.
 - Ed25519 signs an ASCII RFL1-prefixed Base64url JSON payload containing protocol
   version, batch, exact serial, key fingerprint and SHA-256 event-context digest.

@@ -15,17 +15,18 @@ window.SecureNumbers = (() => {
   const cuts = {0:[19,0,3,13],1:[16,33,12,2],2:[26,5,3,9],3:[19,0,3,12],4:[25,49,12,2],5:[19,0,3,12],6:[0,38,12,2],7:[18,0,3,12],8:[28,40,12,2],9:[19,0,3,12]};
   const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function draw(value,maxWidth,height=72) {
-    const chars=Array.from(String(value)), width=Math.max(1,chars.length)*54+16;
-    const scale=Math.min(height/74,maxWidth/width);
-    const stripes=[];
-    for(let x=-74;x<width;x+=22) { const left=Math.max(0,x),right=Math.min(width,x+74); stripes.push(`M${left} ${74-(left-x)}L${right} ${74-(right-x)}`); }
+    const chars=Array.from(String(value)), width=Math.max(1,chars.length)*48+12;
+    const scale=Math.min(height/70,maxWidth/width);
+    const loops=[];
+    // Repeated interlaced loops: dense, subdued engraving behind readable reverse type.
+    for(let x=20;x<width-19;x+=8) loops.push(`M${x} 35C${x-22} 3 ${x+22} 3 ${x} 35C${x-22} 67 ${x+22} 67 ${x} 35Z`);
     return `<g data-secure-number="${esc(value)}" transform="scale(${scale})">
-      <rect width="${width}" height="74" fill="#181818"/>
-      <path d="${stripes.join(' ')}" fill="none" stroke="#fff" stroke-width="4"/>
+      <rect width="${width}" height="70" fill="#505050"/>
+      <path d="${loops.join(' ')}" fill="none" stroke="#858585" stroke-width="1.6"/>
       ${chars.map((c,i)=>{
-        const x=11+i*54, cut=cuts[c];
-        const glyph=digits[c] ? `<path d="${digits[c]}" fill-rule="evenodd" fill="#fff" stroke="#181818" stroke-width="4" paint-order="stroke fill"/>` : `<text x="20" y="56" text-anchor="middle" style="font-family:monospace;font-weight:bold" font-size="49" fill="#fff" stroke="#181818" stroke-width="4" paint-order="stroke fill">${esc(c)}</text>`;
-        return `<g transform="translate(${x} 7)">${glyph}${cut?`<rect x="${cut[0]}" y="${cut[1]}" width="${cut[2]}" height="${cut[3]}" fill="#181818"/>`:''}</g>`;
+        const x=8+i*48, cut=cuts[c];
+        const glyph=digits[c] ? `<path d="${digits[c]}" fill-rule="evenodd" fill="#fff" stroke="#505050" stroke-width="4" paint-order="stroke fill"/>` : `<text x="20" y="56" text-anchor="middle" style="font-family:monospace;font-weight:bold" font-size="49" fill="#fff" stroke="#505050" stroke-width="4" paint-order="stroke fill">${esc(c)}</text>`;
+        return `<g transform="translate(${x} 5)">${glyph}${cut?`<rect x="${cut[0]}" y="${cut[1]}" width="${cut[2]}" height="${cut[3]}" fill="#505050"/>`:''}</g>`;
       }).join('')}
     </g>`;
   }

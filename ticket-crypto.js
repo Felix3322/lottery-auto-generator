@@ -81,7 +81,7 @@ window.TicketCrypto = (() => {
       })());
       try {item=await pending.get(key);}finally{pending.delete(key);}
     }
-    const minWidth=Math.ceil(item.modules*.3*3000/540);
+    const minWidth=Math.ceil(item.modules*.3*3000/620);
     if(f.ticketWidth<minWidth)throw Error(`Increase ticket width to at least ${minWidth} mm for a scannable QR (0.30 mm modules).`);
     return item;
   }
