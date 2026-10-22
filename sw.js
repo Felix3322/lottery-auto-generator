@@ -1,4 +1,4 @@
-const CACHE='raffle-offline-v4';
+const CACHE='raffle-offline-v5';
 const FILES=['./','./index.html','./verify.html','./secure-number.js','./ticket-crypto.js','./issuer.js','./verify.js','./offline.js','./vendor/qrcode.js','./vendor/jsQR.js','./FONT-CREDITS.txt','./SECURITY-GUIDE.txt'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('raffle-offline-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));

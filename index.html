@@ -223,8 +223,7 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     return { numbers, message: `Generated ${length.toLocaleString()} numbers. Full range: ${numbers[0]} → ${numbers[length-1]}.` };
   };
   const secureNumberMarkup = SecureNumbers.draw;
-  const permitMarkup = (value,height) => `<text x="0" y="${height*65/70}" font-size="${height*.66}" font-weight="600" fill="#383838" data-max-width="390" style="font-family:Arial,sans-serif">${escapeXml(value)}</text>`;
-  const numberStripHeight = (f,n) => Math.min(90,300*70/(Array.from(String(n)).length*48+12));
+  const numberStripHeight = (f,n) => Math.min(90,390*70/(Array.from(f.permitNumber).length*34+16),300*70/(Array.from(String(n)).length*34+16));
   const buildTicketSvg = (f, ticketNumber) => {
     const mono=true; // Artwork is always grayscale; yellow only simulates the paper.
     const paper=mono?"#ffffff":"#fff6cf", stub=mono?"#f4f4f4":"#f6e7a6", ink=mono?"#202020":"#20221f", dark=mono?"#222222":"#202822", mid=mono?"#383838":"#394333", accent=mono?"#ffffff":"#f4d44d", muted=mono?"#686868":"#736642", rule=mono?"#cccccc":"#d4c58b";
@@ -273,9 +272,9 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     <path d="M0 855H3000" stroke="${rule}" stroke-width="2"/>
     <path d="M850 20V980" stroke="${muted}" stroke-width="3" stroke-dasharray="8 12" opacity=".65"/>
     <g fill="${muted}" font-size="21" letter-spacing="3"><text x="55" y="887">PERMIT</text><text x="490" y="887">SERIAL</text><text x="935" y="887">PERMIT</text><text x="2260" y="887">SERIAL</text></g>
-    <g fill="${ink}" data-secure-permit="true" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(55 899)">${permitMarkup(f.permitNumber,stripHeight)}</g>
+    <g fill="${ink}" data-secure-permit="true" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(55 899)">${secureNumberMarkup(f.permitNumber,390,stripHeight)}</g>
     <g data-secure-serial="stub" data-code-width="300" fill="${ink}" aria-label="Serial ${num}" transform="translate(490 899)">${secureNumberMarkup(ticketNumber,300,stripHeight)}</g>
-    <g fill="${ink}" data-secure-permit="true" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(935 899)">${permitMarkup(f.permitNumber,stripHeight)}</g>
+    <g fill="${ink}" data-secure-permit="true" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(935 899)">${secureNumberMarkup(f.permitNumber,390,stripHeight)}</g>
     <g data-secure-serial="main" data-code-width="650" fill="${ink}" aria-label="Serial ${num}" transform="translate(2260 899)">${secureNumberMarkup(ticketNumber,650,stripHeight)}</g>
     ${TicketSecurity.band(f,ticketNumber)}
     </g></svg>`;
@@ -316,7 +315,7 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
         const width=context.measureText(number).width;
         node.setAttribute("font-size", Math.min(size,size*Number(node.dataset.maxWidth)/Math.max(1,width)));
       });
-      svg.querySelectorAll("[data-secure-permit]").forEach((node,i) => { node.innerHTML=permitMarkup(formState.permitNumber,numberStripHeight(formState,number)); node.querySelectorAll("[data-max-width]").forEach(fitTextToWidth); });
+      svg.querySelectorAll("[data-secure-permit]").forEach((node,i) => { node.innerHTML=secureNumberMarkup(formState.permitNumber,390,numberStripHeight(formState,number)); node.querySelectorAll("[data-max-width]").forEach(fitTextToWidth); });
       svg.querySelectorAll("[data-secure-serial]").forEach(node => { node.innerHTML=secureNumberMarkup(number,Number(node.dataset.codeWidth),numberStripHeight(formState,number)); node.setAttribute("aria-label",`Serial ${number}`); });
       if(formState.securityEnabled){const old=svg.querySelector("[data-auth-band]");old?.remove();svg.querySelector(".paper-simulation").insertAdjacentHTML("beforeend",TicketSecurity.band(formState,number));}
       svg.setAttribute("aria-label",`Raffle ticket ${number}`);
