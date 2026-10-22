@@ -253,15 +253,16 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     <path d="M945 290H${f.securityEnabled?2070:2620}L${f.securityEnabled?1934:2484} 600H945Q930 600 930 585V305Q930 290 945 290Z" fill="${rule}" opacity=".65"/>
     <path data-raffle-half="left" d="M945 278H${f.securityEnabled?2070:2620}L${f.securityEnabled?1934:2484} 588H945Q930 588 930 573V293Q930 278 945 278Z" fill="url(#heroInk)"/>
 
-    <rect x="972" y="317" width="16" height="246" rx="8" fill="${accent}"/>
-    <text x="1025" y="363" fill="${accent}" font-size="${f.securityEnabled?28:35}" letter-spacing="${f.securityEnabled?3:5}">MAXIMUM VALUE OF</text>
-    <text x="1010" y="559" fill="#ffffff" style="font-family:Arial,sans-serif" font-size="${f.securityEnabled?174:218}" font-weight="800" letter-spacing="-4" data-max-width="${f.securityEnabled?650:1070}">${escapeXml(f.prizeAmount)}</text>
+    <rect x="972" y="316" width="10" height="236" rx="5" fill="${accent}"/>
+    <text x="1020" y="350" fill="${accent}" font-size="${f.securityEnabled?28:35}" letter-spacing="${f.securityEnabled?3:5}">MAXIMUM VALUE OF</text>
+    <path d="M1020 376H${f.securityEnabled?1640:2080}" stroke="#ffffff" stroke-opacity=".24" stroke-width="2"/>
+    <text data-prize-value="true" x="1020" y="530" fill="#ffffff" style="font-family:Arial,sans-serif" font-size="${f.securityEnabled?174:218}" font-weight="800" letter-spacing="-2" data-max-width="${f.securityEnabled?650:1070}">${escapeXml(f.prizeAmount)}</text>
     <g aria-label="50/50 raffle" data-diagonal-raffle="true">
       <path data-raffle-half="right" d="${f.securityEnabled?'M2094 320H2305Q2320 320 2320 335V615Q2320 630 2305 630H1958Z':'M2644 320H2905Q2920 320 2920 335V615Q2920 630 2905 630H2508Z'}" fill="${dark}"/>
-      <text x="${f.securityEnabled?1845:2350}" y="510" text-anchor="middle" fill="#ffffff" style="font-family:Arial,sans-serif;font-weight:900" font-size="${f.securityEnabled?194:224}" letter-spacing="-4">50</text>
-      <text x="${f.securityEnabled?2180:2740}" y="552" text-anchor="middle" fill="#ffffff" style="font-family:Arial,sans-serif;font-weight:900" font-size="${f.securityEnabled?194:224}" letter-spacing="-4">50</text>
-      <text x="${f.securityEnabled?1845:2350}" y="559" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">RAFFLE</text>
-      <text x="${f.securityEnabled?2180:2740}" y="601" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">DRAW</text>
+      <text x="${f.securityEnabled?1845:2350}" y="530" text-anchor="middle" fill="#ffffff" style="font-family:Arial,sans-serif;font-weight:800" font-size="${f.securityEnabled?174:218}" letter-spacing="-4">50</text>
+      <text x="${f.securityEnabled?2180:2740}" y="572" text-anchor="middle" fill="#ffffff" style="font-family:Arial,sans-serif;font-weight:800" font-size="${f.securityEnabled?174:218}" letter-spacing="-4">50</text>
+      <text x="${f.securityEnabled?1845:2350}" y="567" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">RAFFLE</text>
+      <text x="${f.securityEnabled?2180:2740}" y="609" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">DRAW</text>
     </g>
     </g>
     <text x="935" y="685" fill="${ink}" font-size="44" font-weight="700" data-max-width="${f.securityEnabled?1370:1950}">${escapeXml(f.drawDateLine)}</text>
@@ -332,7 +333,7 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     return {pw,ph,w,h,m,g,cols,rows,perPage:cols*rows};
   };
   const buildPrintSheet = (f, numbers, start, renderTicket, placeholder=false) => {
-    const l=getPrintLayout(f); const parts=[];
+    const l=getPrintLayout(f); const parts=[],cutX=new Set(),cutY=new Set();
     for(let i=0;i<l.perPage && (placeholder || start+i<numbers.length);i++) {
       const x=l.m+(i%l.cols)*(l.w+l.g),y=l.m+Math.floor(i/l.cols)*(l.h+l.g);
       const number=numbers[start+i];
@@ -341,12 +342,13 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
         parts.push(ticket);
       } else parts.push(`<rect x="${x}" y="${y}" width="${l.w}" height="${l.h}" fill="#fafafa" stroke="#ddd" stroke-width=".2"/>`);
       if(f.cropMarks === "yes") {
-        for(const cx of [x,x+l.w]) for(const cy of [y,y+l.h]) {
-          const dx=cx===x?-1:1,dy=cy===y?-1:1;
-          parts.push(`<path d="M${cx+dx*.7} ${cy}h${dx*2} M${cx} ${cy+dy*.7}v${dy*2}" fill="none" stroke="#333" stroke-width=".15"/>`);
-        }
+        for(const cx of [x,x+l.w]) cutX.add(Number(cx.toFixed(4)));
+        for(const cy of [y,y+l.h]) cutY.add(Number(cy.toFixed(4)));
       }
     }
+    // One continuous guide per cut, including the outer paper margins.
+    const guides=[...cutX].map(x=>`M${x} 0V${l.ph}`).concat([...cutY].map(y=>`M0 ${y}H${l.pw}`));
+    if(guides.length) parts.push(`<path data-crop-guides="true" d="${guides.join(' ')}" fill="none" stroke="#333" stroke-width=".15"/>`);
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${l.pw} ${l.ph}" width="${l.pw}mm" height="${l.ph}mm">${parts.join("")}</svg>`;
   };
   const renderSheetPreview = () => {
