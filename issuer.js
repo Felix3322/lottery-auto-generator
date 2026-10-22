@@ -13,7 +13,7 @@ window.TicketSecurity = (() => {
   function gate(){
     if(!state?.form)return;
     const blocked=outputBusy||!state.generatedNumbers.length||!outputAllowed(state.form);
-    for(const button of [printCurrentBtn,printBatchBtn,exportCurrentBtn,exportBatchBtn,...document.querySelectorAll('[data-forward]')])button.disabled=blocked || (button.id.startsWith('print')&&!getPrintLayout(state.form).perPage);
+    for(const button of [printCurrentBtn,printBatchBtn,exportCurrentBtn,exportBatchBtn,...document.querySelectorAll('[data-forward],[data-pdf]')])button.disabled=blocked || (button.id.startsWith('print')&&!getPrintLayout(state.form).perPage);
   }
   function schedule() {
     gate();clearTimeout(previewTimer);const job=++previewJob;

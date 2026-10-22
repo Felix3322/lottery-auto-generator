@@ -13,7 +13,10 @@ window.TicketCrypto = (() => {
   const digest = async value => b64(await crypto.subtle.digest('SHA-256',enc.encode(value)));
   const context = f => [String(f.batchId||'').trim(),String(f.permitNumber||''),String(f.schoolName||''),String(f.prizeAmount||''),String(f.drawDateLine||''),String(f.drawLocationLine||''),String(f.descriptionText||''),String(f.footerSummary||'')];
   function checkContext(c) {
-    if(!Array.isArray(c)||c.length!==8||c.some(v=>typeof v!=='string'||v.length>2000)||!c[0]||c[0].length>100) throw Error('Invalid batch/event context.');
+    if(!Array.isArray(c)||c.length!==8) throw Error('Invalid event file: expected 8 event fields.');
+    const labels=['Batch ID','Permit number','School name','Prize amount','Draw date','Draw location','Description','Footer'];
+    c.forEach((value,i)=>{if(typeof value!=='string')throw Error(labels[i]+': expected text.');if(value.length>(i===0?100:2000))throw Error(labels[i]+': exceeds '+(i===0?100:2000)+' characters.');});
+    if(!c[0].trim())throw Error('Batch ID is required. Enter the original batch ID or import the issuer backup.');
     return c;
   }
   async function loadPublic(bundle) {
@@ -59,6 +62,9 @@ window.TicketCrypto = (() => {
     const pub=await exportPublic(f);
     return {...pub,format:'raffle-issuer-private-v1',privateKey:b64(await crypto.subtle.exportKey('pkcs8',issuer.privateKey))};
   }
+  function batchKey(f){if(!issuer)throw Error('Generate or import an issuer key first.');return {privateKey:issuer.privateKey,keyId:issuer.keyId,context:checkContext(context(f))};}
+  const contextDigests=new Map();
+  function contextDigest(ctx){const json=JSON.stringify(ctx);if(!contextDigests.has(json)){if(contextDigests.size>32)contextDigests.clear();contextDigests.set(json,digest(json));}return contextDigests.get(json);}
   const cacheKey=(f,n)=>JSON.stringify([issuer?.keyId,context(f),String(n)]);
   function cached(f,n){return cache.get(cacheKey(f,n));}
   async function ensure(f,n) {
@@ -69,13 +75,13 @@ window.TicketCrypto = (() => {
     let item=cache.get(key);
     if(!item) {
       if(!pending.has(key)) pending.set(key,(async()=>{
-        const body=[1,ctx[0],number,signer.keyId,await digest(JSON.stringify(ctx))];
+        const body=[1,ctx[0],number,signer.keyId,await contextDigest(ctx)];
         const encoded=b64(enc.encode(JSON.stringify(body))),message='RFL1.'+encoded;
         const signature=await crypto.subtle.sign('Ed25519',signer.privateKey,enc.encode(message));
         const token=message+'.'+b64(signature);
         const qr=qrcode(0,'M');qr.addData(token,'Byte');qr.make();
         const count=qr.getModuleCount(),paths=[];
-        for(let y=0;y<count;y++)for(let x=0;x<count;x++)if(qr.isDark(y,x))paths.push(`M${x+4} ${y+4}h1v1h-1z`);
+        for(let y=0;y<count;y++)for(let x=0;x<count;){if(!qr.isDark(y,x)){x++;continue;}const start=x;while(x<count&&qr.isDark(y,x))x++;paths.push(`M${start+4} ${y+4}h${x-start}v1h${start-x}z`);}
         const entry={token,modules:count+8,path:paths.join(''),keyId:signer.keyId};
         cache.set(key,entry);if(cache.size>128)cache.delete(cache.keys().next().value);return entry;
       })());
@@ -85,5 +91,5 @@ window.TicketCrypto = (() => {
     if(f.ticketWidth<minWidth)throw Error(`Increase ticket width to at least ${minWidth} mm for a scannable QR (0.30 mm modules).`);
     return item;
   }
-  return {b64,unb64,digest,context,loadPublic,verify,generate,importIssuer,exportPublic,exportPrivate,ensure,cached,get ready(){return !!issuer},get keyId(){return issuer?.keyId||''}};
+  return {batchKey,b64,unb64,digest,context,loadPublic,verify,generate,importIssuer,exportPublic,exportPrivate,ensure,cached,get ready(){return !!issuer},get keyId(){return issuer?.keyId||''}};
 })();

@@ -20,5 +20,5 @@ window.SecureNumbers = (() => {
       <g fill="#303030" aria-label="${esc(value)}">${lettering}</g>
     </g>`;
   }
-  return {draw,measure};
+  return {draw,measure,glyphs,units};
 })();

@@ -59,3 +59,12 @@ WHAT THE FEATURES DO
 兑奖时核对验签结果与纸质票号、许可证、活动和奖金一致，再点击“Mark as redeemed”。
 同一场次请使用一台兑奖设备。多台离线设备之间没有实时重复兑奖拦截；请定期导出记录。
 不要把 PRIVATE 私钥文件上传到仓库、Pages 或发送给持票人。
+
+DIRECT PDF EXPORT
+Download Batch PDF creates a file without opening Chromium print preview.
+Static ticket artwork and FE glyphs are reused inside the PDF. Fixed labels are
+rendered once at high resolution to preserve local fonts and Unicode. FE codes
+and cut guides remain vectors; QR modules are embedded as lossless images.
+Up to four local workers generate signatures and QR modules in parallel; no keys
+or ticket data are sent to a server. Cancelling terminates workers and does not
+save a partial PDF. Print the downloaded PDF at 100% / Actual Size.

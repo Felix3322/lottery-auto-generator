@@ -150,8 +150,9 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
 <label>Ticket gap (mm)<input name="ticketGap" type="number" min="0" max="20" value="6"></label>
 <label>Crop marks<select name="cropMarks"><option value="yes">Show crop marks</option><option value="no">Hide crop marks</option></select></label>
 <label>Size reference<select name="cardReference"><option value="yes">Credit card · 85.60 × 53.98 mm</option><option value="no">Hide reference</option></select></label>
-</div><p>The ticket keeps its proportions; enabling signed QR adds a verification strip. Crop marks reserve at least 6 mm between tickets. Print at 100% / Actual size, with browser headers and footers off.</p>
+</div><p>The ticket keeps its proportions; signed QR stays within the same ticket size. Crop marks reserve at least 6 mm between tickets. Print at 100% / Actual size, with browser headers and footers off.</p>
         <div class="action-row">
+          <div class="action-group"><button type="button" id="pdfCurrentBtn" data-pdf>Download Current PDF</button><button type="button" id="pdfBatchBtn" data-pdf>Download Batch PDF</button></div>
           <div class="action-group"><button type="button" id="printCurrentBtn">Print Current Preview</button><button type="button" id="printBatchBtn">Print Current Batch</button></div>
           <div class="action-group"><button type="button" class="secondary" id="exportCurrentBtn">Export Current PNG</button><button type="button" class="secondary" id="exportBatchBtn">Export Batch PNG</button></div>
         </div>
@@ -164,12 +165,12 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
       <div class="preview-title"><h1>Ticket Preview</h1><span>Editing the left panel updates the preview in real time. If you print this page directly from the browser, only the current preview ticket is printed.</span></div>
       <div class="nav-group"><button type="button" class="ghost" id="prevBtn">Previous</button><div class="preview-meta"><span id="previewMeta">Preview 1 / 1</span><span id="currentNumberBadge">0567</span></div><button type="button" class="ghost" id="nextBtn">Next</button></div>
     </div>
-    <div class="action-group" style="margin:16px 0 0"><button type="button" data-forward="printCurrentBtn">Print preview</button><button type="button" data-forward="printBatchBtn">Print batch / PDF</button><button type="button" class="secondary" data-forward="exportCurrentBtn">Export PNG</button></div><div class="preview-stage"><div class="ticket-frame" id="ticketPreview"></div></div>
+    <div class="action-group" style="margin:16px 0 0"><button type="button" data-forward="printCurrentBtn">Print preview</button><button type="button" data-forward="printBatchBtn">Print batch</button><button type="button" data-forward="pdfBatchBtn">Download PDF</button><button type="button" class="secondary" data-forward="exportCurrentBtn">Export PNG</button></div><div class="preview-stage"><div class="ticket-frame" id="ticketPreview"></div></div>
     <section class="layout-preview"><div class="layout-heading"><h2>Print layout</h2><span id="layoutSummary"></span></div><div class="paper-wrap"><div class="paper-model" id="sheetPreview"></div></div><p class="caption">Yellow is a paper simulation only; no yellow background ink is printed. Credit card reference is excluded from print. Use yellow paper, black-and-white mode and 100% / Actual size.</p></section><div class="status-box"><strong id="batchSummaryTitle">Current Batch</strong><p id="batchSummaryText">Generated 1 number. Ready to print or export.</p></div>
     <p id="offlineStatus" class="caption"></p><div class="caption">Black-and-white print / PNG output · Yellow paper preview · Full number ranges, with no 500-ticket cutoff · Print directly or save as PDF. Large jobs show progress and can be cancelled.</div>
   </section>
 </main>
-<script src="vendor/qrcode.js"></script><script src="secure-number.js"></script><script src="ticket-crypto.js"></script><script src="issuer.js"></script>
+<script src="vendor/qrcode.js"></script><script src="secure-number.js"></script><script src="ticket-crypto.js"></script><script src="issuer.js"></script><script src="vendor/jspdf.umd.min.js"></script><script src="vendor/svg2pdf.umd.min.js"></script><script src="pdf-export.js"></script>
 <script>
   let outputBusy = false;
   let cancelOutput = false;
@@ -264,10 +265,10 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
       <text x="${f.securityEnabled?2180:2740}" y="609" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">DRAW</text>
     </g>
     </g>
-    <text x="935" y="685" fill="${ink}" font-size="44" font-weight="700" data-max-width="${f.securityEnabled?1370:1950}">${escapeXml(f.drawDateLine)}</text>
-    <text x="935" y="742" fill="${muted}" font-size="35" data-max-width="${f.securityEnabled?1370:1950}">${escapeXml(f.drawLocationLine)}</text>
-    ${renderTextLines(desc,{x:935,y:f.securityEnabled?780:795,lineHeight:f.securityEnabled?30:34,fontSize:f.securityEnabled?25:28,fill:muted,maxWidth:1240})}
-    <text x="${f.securityEnabled?935:2910}" y="${f.securityEnabled?840:808}" text-anchor="${f.securityEnabled?'start':'end'}" fill="${ink}" font-size="${f.securityEnabled?23:30}" font-weight="700" data-max-width="${f.securityEnabled?1370:680}">${escapeXml(f.footerSummary)}</text>
+    <text x="935" y="657" fill="${ink}" font-size="44" font-weight="700" data-max-width="${f.securityEnabled?1370:1950}">${escapeXml(f.drawDateLine)}</text>
+    <text x="935" y="703" fill="${ink}" font-size="38" data-max-width="${f.securityEnabled?1370:1950}">${escapeXml(f.drawLocationLine)}</text>
+    ${renderTextLines(desc,{x:935,y:746,lineHeight:38,fontSize:34,fill:ink,maxWidth:f.securityEnabled?1370:1950})}
+    <text x="935" y="834" text-anchor="start" fill="${ink}" font-size="36" font-weight="700" data-max-width="${f.securityEnabled?1370:1950}">${escapeXml(f.footerSummary)}</text>
     <rect y="855" width="3000" height="145" fill="${mono?'#ffffff':'#fffcf0'}"/>
     <path d="M850 20V980" stroke="${muted}" stroke-width="3" stroke-dasharray="8 12" opacity=".65"/>
     <g fill="${muted}" font-size="21" letter-spacing="3"><text x="55" y="887">PERMIT</text><text x="490" y="887">SERIAL</text><text x="935" y="887">PERMIT</text><text x="2260" y="887">SERIAL</text></g>
@@ -421,6 +422,8 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
   nextBtn.addEventListener("click", () => { if (state.previewIndex >= state.generatedNumbers.length - 1) return; state.previewIndex += 1; renderPreview(); });
   previewPositionInput.addEventListener("change", () => { const total = state.generatedNumbers.length; const rawValue = sanitizeNumber(previewPositionInput.value, 1); state.previewIndex = Math.min(Math.max(rawValue, 1), total) - 1; renderPreview(); });
   printCurrentBtn.addEventListener("click", () => { const snapshot = getSnapshotForOutput(); const current = snapshot.numbers[state.previewIndex] || snapshot.numbers[0]; openPrintWindow([current]); });
+  document.getElementById("pdfCurrentBtn").onclick=()=>TicketPDF.download(true);
+  document.getElementById("pdfBatchBtn").onclick=()=>TicketPDF.download(false);
   printBatchBtn.addEventListener("click", () => { const snapshot = getSnapshotForOutput(); openPrintWindow(snapshot.numbers); });
   exportCurrentBtn.addEventListener("click", async () => { const snapshot = getSnapshotForOutput(); const current = snapshot.numbers[state.previewIndex] || snapshot.numbers[0]; await exportNumbersAsPng([current]); });
   exportBatchBtn.addEventListener("click", async () => { const snapshot = getSnapshotForOutput(); await exportNumbersAsPng(snapshot.numbers); });
