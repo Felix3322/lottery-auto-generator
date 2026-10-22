@@ -1,0 +1,4 @@
+E13-B digit outlines by Zachary Schneider (2021).
+Source: https://github.com/zaxbux/MICR_E13-B_Font
+License: SIL Open Font License 1.1; see MICR-LICENSE.txt.
+Digits are embedded as SVG paths. Non-numeric characters are preserved using a monospace fallback.

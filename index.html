@@ -60,12 +60,39 @@
     @media (max-width: 720px) { body { padding: 14px; } .panel, .preview-shell { padding: 16px; border-radius: 18px; } .field-grid.compact { grid-template-columns: 1fr; } .ticket-frame { min-width: 640px; } .preview-stage { padding: 14px; } }
     @media print {
       body { padding: 0; background: white; }
-      .panel, .preview-topbar, .status-box, .caption { display: none !important; }
+      .panel, .preview-topbar, .status-box, .caption, .preview-shell > .action-group { display: none !important; }
       .preview-shell { border: 0; box-shadow: none; background: transparent; padding: 0; }
       .preview-stage { padding: 0; background: transparent; }
       .ticket-frame { min-width: 0; }
       .ticket-frame svg { box-shadow: none; border-radius: 0; }
     }
+
+    body { background-image: radial-gradient(ellipse at 80% 0%, #fff9db80, transparent 55%); }
+    .app-shell { grid-template-columns: 350px minmax(0,1fr); gap:28px; }
+    .panel { padding:24px; max-height:calc(100vh - 48px); overflow-y:auto; scrollbar-width:thin; }
+    .section h2 { font-size:13px; text-transform:uppercase; letter-spacing:.13em; color:var(--accent); }
+    label {font-size:12px; gap:6px} input,textarea,select {border-radius:9px;padding:10px 12px}
+    .preview-shell {position:sticky;top:24px;padding:28px}
+    .preview-title h1 {font-size:28px;letter-spacing:-.03em}
+    .preview-title span {max-width:540px;font-size:13px}
+    .preview-stage {padding:22px 0;background:transparent;overflow:visible}
+    .ticket-frame {min-width:0} .ticket-frame svg {border-radius:12px;box-shadow:0 12px 32px var(--card-shadow)}
+    .preview-meta {font-size:12px} #currentNumberBadge {font-variant-numeric:tabular-nums;border-left:1px solid #a9955c60;padding-left:10px;overflow-wrap:anywhere}
+    .status-box {margin-top:24px;background:#ffffff80} .caption {margin-top:16px}
+    button {border-radius:10px;padding:11px 14px;font-size:12px} button:focus-visible {outline:3px solid #9d832a;outline-offset:3px}
+    [hidden]{display:none!important}
+    @media(max-width:1180px) { .app-shell{grid-template-columns:300px minmax(0,1fr);gap:18px}.preview-shell{padding:20px}.nav-group{margin-top:10px} }
+    @media(max-width:860px) {.app-shell{display:flex;flex-direction:column}.preview-shell{position:static;order:-1;width:100%}.panel{position:static;max-height:none;width:100%}.ticket-frame{min-width:0}.field-grid.compact{grid-template-columns:repeat(2,minmax(0,1fr))}body{padding:14px}.preview-stage{padding:14px 0}}
+    @media print { @page{size:Letter landscape;margin:10mm}.app-shell{display:block}.preview-shell{position:static;padding:0}.preview-stage{padding:0}.nav-group{display:none}svg{print-color-adjust:exact;-webkit-print-color-adjust:exact} }
+
+    .layout-preview{margin-top:24px;border-top:1px solid var(--panel-border);padding-top:22px}
+    .layout-heading{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .layout-heading h2{margin:0;font-size:16px}.layout-heading span{font-size:12px;color:var(--text-muted)}
+    .paper-wrap{background:#e7e6e0;border-radius:12px;padding:24px;overflow:auto}
+    .paper-model{max-width:540px;margin:auto}.paper-model>svg{display:block;width:100%;height:auto;background:white;box-shadow:0 4px 20px #0002}
+    .card-scale{margin-top:22px}.card-scale .credit-card{border:1px solid #4b4b4b;border-radius:8px;aspect-ratio:85.6/53.98;background:linear-gradient(130deg,#f5f5f5,#d9d9d9);display:flex;flex-direction:column;justify-content:space-between;padding:5%;font-family:Arial,sans-serif;color:#333;font-size:clamp(7px,1vw,12px)}
+    .card-scale p{font-size:11px;color:#555;margin:10px 0 0}.credit-card strong{letter-spacing:1px}.credit-card span{font-size:.8em}
+    @media print{.layout-preview{display:none!important}}
   </style>
 </head>
 <body>
@@ -75,7 +102,7 @@
       <section class="section">
         <h2>Ticket Settings</h2>
         <div class="field-grid">
-          <label>Background Color<select name="backgroundTheme"><option value="yellow">Yellow (Current)</option><option value="white">White (Print)</option></select></label>
+          <label>Paper preview<select name="backgroundTheme"><option value="yellow">Yellow paper · black ink</option><option value="white">White paper · black ink</option></select></label>
           <label>School / Event Name (One line per row)<textarea name="schoolName">Clayton Brown Public School
 &amp; Hearst High School</textarea></label>
           <label>Permit Number<input name="permitNumber" value="#M858753"></label>
@@ -86,15 +113,15 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
           <label>Draw Location Line<input name="drawLocationLine" value="at Clayton Brown Public School &amp; Hearst High School"></label>
           <label>Footer Text<input name="footerSummary" value="$2 each | 2000 tickets | Permit: #M858753"></label>
         </div>
-        <p>These fields update both the stub and the main ticket. Background color also affects printing and image export.</p>
+        <p>Yellow simulates colored paper on screen. Print and PNG output are always black and white. Load yellow paper for the yellow result.</p>
       </section>
       <section class="section">
         <h2>Batch Numbers</h2>
         <div class="field-grid compact">
           <label>Number Prefix<input name="numberPrefix" data-batch-field value=""></label>
           <label>Number Suffix<input name="numberSuffix" data-batch-field value=""></label>
-          <label>Start Number<input name="numberStart" type="number" data-batch-field min="0" step="1" value="567"></label>
-          <label>End Number<input name="numberEnd" type="number" data-batch-field min="0" step="1" value="567"></label>
+          <label>Start Number<input name="numberStart" type="number" data-batch-field min="0" step="1" value="1"></label>
+          <label>End Number<input name="numberEnd" type="number" data-batch-field min="0" step="1" value="2000"></label>
           <label>Zero Padding<input name="numberPadding" type="number" data-batch-field min="0" max="12" step="1" value="4"></label>
           <label>Preview Position<input id="previewPositionInput" type="number" min="1" step="1" value="1"></label>
         </div>
@@ -104,12 +131,21 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
         <p>If you fill in a custom number list, it takes priority. Otherwise numbers are generated from the start and end range.</p>
       </section>
       <section class="section">
-        <h2>Output Actions</h2>
+        <h2>Output Actions</h2><div class="field-grid compact">
+<label>Paper<select name="paper"><option value="letter">Letter · 216 × 279 mm</option><option value="a4">A4 · 210 × 297 mm</option></select></label>
+<label>Orientation<select name="orientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
+<label>Ticket width (mm)<input name="ticketWidth" type="number" min="60" max="280" step="1" value="180"></label>
+<label>Ticket height (mm)<input name="ticketHeight" type="number" min="20" max="94" step="0.1" value="60"></label>
+<label>Page margin (mm)<input name="pageMargin" type="number" min="5" max="40" value="10"></label>
+<label>Ticket gap (mm)<input name="ticketGap" type="number" min="0" max="20" value="6"></label>
+<label>Crop marks<select name="cropMarks"><option value="yes">Show crop marks</option><option value="no">Hide crop marks</option></select></label>
+<label>Size reference<select name="cardReference"><option value="yes">Credit card · 85.60 × 53.98 mm</option><option value="no">Hide reference</option></select></label>
+</div><p>Width and height stay in a 3:1 ratio. Crop marks reserve at least 6 mm between tickets. Print at 100% / Actual size, with browser headers and footers off.</p>
         <div class="action-row">
           <div class="action-group"><button type="button" id="printCurrentBtn">Print Current Preview</button><button type="button" id="printBatchBtn">Print Current Batch</button></div>
           <div class="action-group"><button type="button" class="secondary" id="exportCurrentBtn">Export Current PNG</button><button type="button" class="secondary" id="exportBatchBtn">Export Batch PNG</button></div>
         </div>
-        <p id="actionStatus" class="status-line">When exporting a batch of PNG files, the browser may ask for permission to allow multiple downloads.</p>
+        <button type="button" id="cancelOutputBtn" class="secondary" hidden>Cancel output</button><p id="actionStatus" role="status" aria-live="polite" class="status-line">When exporting a batch of PNG files, the browser may ask for permission to allow multiple downloads.</p>
       </section>
     </form>
   </aside>
@@ -118,16 +154,19 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
       <div class="preview-title"><h1>Ticket Preview</h1><span>Editing the left panel updates the preview in real time. If you print this page directly from the browser, only the current preview ticket is printed.</span></div>
       <div class="nav-group"><button type="button" class="ghost" id="prevBtn">Previous</button><div class="preview-meta"><span id="previewMeta">Preview 1 / 1</span><span id="currentNumberBadge">0567</span></div><button type="button" class="ghost" id="nextBtn">Next</button></div>
     </div>
-    <div class="preview-stage"><div class="ticket-frame" id="ticketPreview"></div></div>
-    <div class="status-box"><strong id="batchSummaryTitle">Current Batch</strong><p id="batchSummaryText">Generated 1 number. Ready to print or export.</p></div>
-    <div class="caption">PNG export uses 3000 × 1000 pixels by default. The current batch is capped at 500 tickets to avoid browser slowdowns during rendering or downloads.</div>
+    <div class="action-group" style="margin:16px 0 0"><button type="button" data-forward="printCurrentBtn">Print preview</button><button type="button" data-forward="printBatchBtn">Print batch / PDF</button><button type="button" class="secondary" data-forward="exportCurrentBtn">Export PNG</button></div><div class="preview-stage"><div class="ticket-frame" id="ticketPreview"></div></div>
+    <section class="layout-preview"><div class="layout-heading"><h2>Print layout</h2><span id="layoutSummary"></span></div><div class="paper-wrap"><div class="paper-model" id="sheetPreview"></div></div><p class="caption">Yellow is a paper simulation only; no yellow background ink is printed. Credit card reference is excluded from print. Use yellow paper, black-and-white mode and 100% / Actual size.</p></section><div class="status-box"><strong id="batchSummaryTitle">Current Batch</strong><p id="batchSummaryText">Generated 1 number. Ready to print or export.</p></div>
+    <div class="caption">Black-and-white print / PNG output · Yellow paper preview · Full number ranges, with no 500-ticket cutoff · Print directly or save as PDF. Large jobs show progress and can be cancelled.</div>
   </section>
 </main>
 <script>
-  const MAX_BATCH_SIZE = 500;
+  let outputBusy = false;
+  let cancelOutput = false;
+  const cancelOutputBtn = document.getElementById("cancelOutputBtn");
+  cancelOutputBtn.addEventListener("click", () => { cancelOutput = true; });
   const THEME_PRESETS = {
     yellow: { pageBg: "#ece7d9", ticketSurface: "#ebd762", shadow: "rgba(92, 71, 18, 0.2)", paperTop: "#eddc68", paperBottom: "#e2cb58", separator: "#8d7a35", textDark: "#2b2818", textMuted: "#6f602d", lineSoft: "#c8b35a", lineStrong: "#75652e", stubNumber: "#3c3418", footerNumber: "#6e602e", panelStart: "#5a4d1b", panelMid: "#736328", panelEnd: "#4d4119", highlight: "#f1df80", prizeStroke: "#ceb65b", prizeCaption: "#f0d95a", prizeAmount: "#ffd246", raffleMain: "#f3efdf", raffleSub: "#f2d34d" },
-    white: { pageBg: "#f2f2ee", ticketSurface: "#ffffff", shadow: "rgba(58, 48, 22, 0.12)", paperTop: "#ffffff", paperBottom: "#f5f4ef", separator: "#a99f86", textDark: "#2f2a20", textMuted: "#6a6050", lineSoft: "#d8d0bc", lineStrong: "#8c8062", stubNumber: "#302b22", footerNumber: "#615948", panelStart: "#4c4330", panelMid: "#6a5d3e", panelEnd: "#423826", highlight: "#f2e8b8", prizeStroke: "#c6b07b", prizeCaption: "#f3de7b", prizeAmount: "#ffd246", raffleMain: "#f4f0e3", raffleSub: "#efd16f" }
+    white: { pageBg: "#f0f1f3", ticketSurface: "#ffffff", shadow: "rgba(0,0,0,.12)", paperTop: "#ffffff", paperBottom: "#ffffff", separator: "#777777", textDark: "#111111", textMuted: "#444444", lineSoft: "#cccccc", lineStrong: "#555555", stubNumber: "#111111", footerNumber: "#222222", panelStart: "#222222", panelMid: "#333333", panelEnd: "#111111", highlight: "#ffffff", prizeStroke: "#bbbbbb", prizeCaption: "#ffffff", prizeAmount: "#ffffff", raffleMain: "#ffffff", raffleSub: "#ffffff" }
   };
   const state = { previewIndex: 0, generatedNumbers: [], batchMessage: "", form: null };
   const form = document.getElementById("configForm");
@@ -152,59 +191,228 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
   const pause = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
   const attrString = (attributes) => Object.entries(attributes).filter(([, value]) => value !== undefined && value !== null && value !== "").map(([key, value]) => `${key}="${escapeXml(value)}"`).join(" ");
   const renderTextLines = (lines, options) => lines.map((line, index) => `<text ${attrString({ x: options.x, y: options.y + (index * options.lineHeight), class: options.className, fill: options.fill, "font-size": options.fontSize, "font-weight": options.fontWeight, "letter-spacing": options.letterSpacing, "text-anchor": options.textAnchor, "data-max-width": options.maxWidth })}>${escapeXml(line)}</text>`).join("");
-  const collectFormState = () => ({ backgroundTheme: form.backgroundTheme.value, schoolName: form.schoolName.value, permitNumber: form.permitNumber.value.trim(), prizeAmount: form.prizeAmount.value.trim(), descriptionText: form.descriptionText.value, drawDateLine: form.drawDateLine.value.trim(), drawLocationLine: form.drawLocationLine.value.trim(), footerSummary: form.footerSummary.value.trim(), numberPrefix: form.numberPrefix.value, numberSuffix: form.numberSuffix.value, numberStart: form.numberStart.value, numberEnd: form.numberEnd.value, numberPadding: form.numberPadding.value, customNumbers: form.customNumbers.value });
+  const collectFormState = () => ({ paper: form.paper.value, orientation: form.orientation.value, ticketWidth: Number(form.ticketWidth.value), ticketHeight: Number(form.ticketHeight.value), pageMargin: Number(form.pageMargin.value), ticketGap: Number(form.ticketGap.value), cropMarks: form.cropMarks.value, cardReference: form.cardReference.value, backgroundTheme: form.backgroundTheme.value, schoolName: form.schoolName.value, permitNumber: form.permitNumber.value.trim(), prizeAmount: form.prizeAmount.value.trim(), descriptionText: form.descriptionText.value, drawDateLine: form.drawDateLine.value.trim(), drawLocationLine: form.drawLocationLine.value.trim(), footerSummary: form.footerSummary.value.trim(), numberPrefix: form.numberPrefix.value, numberSuffix: form.numberSuffix.value, numberStart: form.numberStart.value, numberEnd: form.numberEnd.value, numberPadding: form.numberPadding.value, customNumbers: form.customNumbers.value });
   const buildNumberList = (formState) => {
-    const customNumbers = formState.customNumbers.split(/[\n,，;；]+/).map((token) => token.trim()).filter(Boolean);
-    if (customNumbers.length) {
-      const numbers = customNumbers.slice(0, MAX_BATCH_SIZE);
-      return { numbers, message: customNumbers.length > MAX_BATCH_SIZE ? `Detected ${customNumbers.length} custom numbers. Only the first ${MAX_BATCH_SIZE} were kept.` : `Using the custom number list with ${numbers.length} item(s).` };
+    const custom = formState.customNumbers.split(/[\n,，;；]+/).map(s => s.trim()).filter(Boolean);
+    if (custom.length) return { numbers: custom, message: `Using all ${custom.length.toLocaleString()} custom numbers.` };
+    const start = Number(formState.numberStart), end = Number(formState.numberEnd);
+    if (!formState.numberStart.trim() || !formState.numberEnd.trim() || !Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || end < 0 || !Number.isSafeInteger(Math.abs(end-start)+1)) {
+      return { numbers: [], message: "Enter valid non-negative whole start and end numbers within JavaScript's safe integer range." };
     }
-    const start = sanitizeNumber(formState.numberStart, 1);
-    const end = sanitizeNumber(formState.numberEnd, start);
-    const padding = Math.max(0, sanitizeNumber(formState.numberPadding, 0));
-    const prefix = formState.numberPrefix || "";
-    const suffix = formState.numberSuffix || "";
-    const ascending = start <= end;
-    const theoreticalCount = Math.abs(end - start) + 1;
-    const numbers = [];
-    for (let value = start; ascending ? value <= end : value >= end; value += ascending ? 1 : -1) {
-      numbers.push(`${prefix}${String(value).padStart(padding, "0")}${suffix}`);
-      if (numbers.length >= MAX_BATCH_SIZE) break;
-    }
-    return { numbers, message: theoreticalCount > MAX_BATCH_SIZE ? `The selected range produces ${theoreticalCount} numbers. Only the first ${MAX_BATCH_SIZE} were kept to avoid browser slowdowns.` : `Generated ${numbers.length} number(s) from the selected range.` };
+    const length = Math.abs(end-start)+1, step = start <= end ? 1 : -1;
+    const padding = Math.min(12, Math.max(0, sanitizeNumber(formState.numberPadding, 0)));
+    // Compute only requested entries: even very large ranges do not allocate an array.
+    const numbers = new Proxy({ length }, { get(target, key) {
+      if (typeof key === "string" && /^(0|[1-9]\d*)$/.test(key)) {
+        const index = Number(key);
+        return index < length ? `${formState.numberPrefix}${String(start+step*index).padStart(padding,"0")}${formState.numberSuffix}` : undefined;
+      }
+      return target[key];
+    }});
+    return { numbers, message: `Generated ${length.toLocaleString()} numbers. Full range: ${numbers[0]} → ${numbers[length-1]}.` };
   };
-  const buildTicketSvg = (formState, ticketNumber) => {
-    const theme = THEME_PRESETS[formState.backgroundTheme] || THEME_PRESETS.yellow;
-    const schoolLines = splitLines(formState.schoolName, ["Clayton Brown Public School", "& Hearst High School"], 2);
-    const descriptionLines = splitLines(formState.descriptionText, ["Proceeds to be used for a school trip", "One (1) lucky winner will receive half of the proceeds of ticket sales"], 2);
-    const permitNumber = formState.permitNumber || "#M858753";
-    const prizeAmount = formState.prizeAmount || "$2000";
-    const drawDateLine = formState.drawDateLine || "Draw date: March 5, 2025 at 2:00 p.m.";
-    const drawLocationLine = formState.drawLocationLine || "at Clayton Brown Public School & Hearst High School";
-    const footerSummary = formState.footerSummary || "$2 each | 2000 tickets | Permit: #M858753";
-    const currentNumber = ticketNumber || "0001";
-    return `<svg class="ticket-svg" viewBox="0 0 3000 1000" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="paperFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${theme.paperTop}"/><stop offset="100%" stop-color="${theme.paperBottom}"/></linearGradient><linearGradient id="panelFill" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="${theme.panelStart}"/><stop offset="40%" stop-color="${theme.panelMid}"/><stop offset="100%" stop-color="${theme.panelEnd}"/></linearGradient></defs><rect x="0" y="0" width="3000" height="1000" rx="10" fill="url(#paperFill)"/><line x1="1044" y1="40" x2="1044" y2="960" stroke="${theme.separator}" stroke-width="5" stroke-dasharray="10 18" opacity="0.5"/><g id="stub"><image href="./school_logo.png" x="40" y="46" width="90" height="90"/>${renderTextLines(schoolLines, { x: 146, y: 82, lineHeight: 50, className: "brand condensed", fill: theme.textDark, fontSize: 46, fontWeight: 700, maxWidth: 760 })}<text x="40" y="184" font-size="44" fill="${theme.stubNumber}" opacity="0.86" data-max-width="610">Permit: ${escapeXml(permitNumber)}</text><text x="760" y="184" class="condensed" font-size="92" font-weight="700" fill="${theme.stubNumber}" data-max-width="200">${escapeXml(currentNumber)}</text><line x1="40" y1="212" x2="948" y2="212" stroke="${theme.lineSoft}" stroke-width="4"/><g fill="${theme.textDark}" font-size="48"><text x="74" y="360">Name:</text><line x1="210" y1="362" x2="948" y2="362" stroke="${theme.lineStrong}" stroke-width="5"/><line x1="74" y1="480" x2="948" y2="480" stroke="${theme.lineStrong}" stroke-width="5"/><text x="74" y="600">Address:</text><line x1="265" y1="602" x2="948" y2="602" stroke="${theme.lineStrong}" stroke-width="5"/><line x1="74" y1="720" x2="948" y2="720" stroke="${theme.lineStrong}" stroke-width="5"/><text x="74" y="840">Phone:</text><line x1="225" y1="842" x2="948" y2="842" stroke="${theme.lineStrong}" stroke-width="5"/></g></g><g id="main"><image href="./school_logo.png" x="1118" y="40" width="200" height="200"/>${renderTextLines(schoolLines, { x: 1340, y: 110, lineHeight: 82, className: "brand condensed", fill: theme.textDark, fontSize: 72, fontWeight: 700, letterSpacing: 1.5, maxWidth: 1460 })}${renderTextLines(descriptionLines, { x: 2860, y: 165, lineHeight: 50, className: "condensed", fill: theme.textMuted, fontSize: 42, fontWeight: 500, letterSpacing: 1, textAnchor: "end", maxWidth: 930 })}<rect x="1330" y="250" width="1530" height="10" rx="5" fill="${theme.lineSoft}" opacity="0.75"/><g id="feature-panel"><rect x="1116" y="300" width="1760" height="300" fill="url(#panelFill)"/><path d="M2200 600 L2420 300 H2520 L2300 600 Z" fill="${theme.highlight}" opacity="0.15"/><rect x="1140" y="335" width="1020" height="230" fill="none" stroke="${theme.prizeStroke}" stroke-width="9"/><text x="1175" y="395" class="condensed" font-size="56" font-weight="700" fill="${theme.prizeCaption}" letter-spacing="1">MAXIMUM VALUE OF</text><text class="display" x="1175" y="535" font-size="180" font-weight="900" fill="${theme.prizeAmount}" letter-spacing="-2" data-max-width="950">${escapeXml(prizeAmount)}</text><g text-anchor="middle"><text class="display" x="2560" y="505" font-size="210" font-weight="900" fill="${theme.raffleMain}" letter-spacing="-6">50/50</text><text class="condensed" x="2560" y="575" font-size="62" font-weight="700" fill="${theme.raffleSub}" letter-spacing="2">RAFFLE DRAW</text></g></g><g font-size="54" fill="${theme.textDark}" class="condensed"><text x="1122" y="685" letter-spacing="1.2" data-max-width="1450">${escapeXml(drawDateLine)}</text><text x="1122" y="755" letter-spacing="0.8" data-max-width="1450">${escapeXml(drawLocationLine)}</text><text x="1122" y="825" opacity="0.92" letter-spacing="1.5" data-max-width="1450">${escapeXml(footerSummary)}</text></g><text class="condensed" x="2700" y="825" font-size="105" font-weight="700" fill="${theme.footerNumber}" data-max-width="220">${escapeXml(currentNumber)}</text></g></svg>`;
+  const MICR_GLYPHS = {"0":{"w":6.37,"path":"M4.5,8.42H1.87A1.87,1.87,0,0,1,0,6.55V1.87A1.87,1.87,0,0,1,1.87,0H4.5A1.87,1.87,0,0,1,6.37,1.87V6.55A1.87,1.87,0,0,1,4.5,8.42ZM5.59,6.55V1.87A.92.92,0,0,0,4.66.94H1.71a.92.92,0,0,0-.93.93V6.55a.93.93,0,0,0,.93.94h3A.93.93,0,0,0,5.59,6.55Z"},"1":{"w":3.74,"path":"M1.87,4.21a.47.47,0,0,0,.47.47h.93a.47.47,0,0,1,.47.47V8a.46.46,0,0,1-.47.46H.47A.46.46,0,0,1,0,8V5.15a.47.47,0,0,1,.47-.47h0a.47.47,0,0,0,.47-.47V1.4h0A.46.46,0,0,0,.47.94h0A.47.47,0,0,1,.47,0H1.4a.47.47,0,0,1,.47.47V4.21Z"},"2":{"w":3.74,"path":"M1.41,4.68H3.27a.47.47,0,0,0,.47-.47V.47A.47.47,0,0,0,3.27,0H.47A.47.47,0,0,0,0,.47H0A.48.48,0,0,0,.47.94H2.34a.46.46,0,0,1,.47.46V3.27a.47.47,0,0,1-.47.47H.47A.48.48,0,0,0,0,4.22V8a.47.47,0,0,0,.47.47H3.28a.47.47,0,0,0,0-.93H1.41A.47.47,0,0,1,.94,7V5.15A.47.47,0,0,1,1.41,4.68Z"},"3":{"w":4.68,"path":"M4.21,4.21a.47.47,0,0,1-.47-.47V.47A.47.47,0,0,0,3.28,0H.47A.47.47,0,0,0,0,.47.48.48,0,0,0,.47.94H2.34a.46.46,0,0,1,.47.46V3.28a.46.46,0,0,1-.47.46H.47A.48.48,0,0,0,0,4.21a.47.47,0,0,0,.47.47H2.34a.47.47,0,0,1,.47.47V7a.47.47,0,0,1-.47.47H.47a.47.47,0,1,0,0,.93H4.21A.47.47,0,0,0,4.68,8V4.68a.47.47,0,0,0-.47-.47Z"},"4":{"w":5.62,"path":"M3.74,5.15a.46.46,0,0,1-.46.47H2.34a.47.47,0,0,1-.47-.47V.47A.47.47,0,0,0,1.4,0H.47A.47.47,0,0,0,0,.47V6.09a.47.47,0,0,0,.47.46H3.28A.46.46,0,0,1,3.74,7V8a.47.47,0,0,0,.47.46h.94A.47.47,0,0,0,5.62,8V5.15a.48.48,0,0,0-.47-.47H4.21a.48.48,0,0,0-.47.47Z"},"5":{"w":4.68,"path":"M4.21,3.74H1.41a.47.47,0,0,1-.47-.47V1.4A.45.45,0,0,1,1.4.94H4.21a.47.47,0,1,0,0-.94H.47A.47.47,0,0,0,0,.47V4.21a.47.47,0,0,0,.47.47h2.8a.47.47,0,0,1,.47.47V7a.47.47,0,0,1-.47.47H.46a.47.47,0,1,0,0,.93H4.21A.47.47,0,0,0,4.68,8V4.22A.48.48,0,0,0,4.21,3.74Z"},"6":{"w":5.62,"path":"M2.81,1.4A.46.46,0,0,0,2.34.94H1.4a.45.45,0,0,0-.46.46V4.21a.46.46,0,0,0,.46.47H5.15a.48.48,0,0,1,.47.47V8a.47.47,0,0,1-.47.46H.47A.47.47,0,0,1,0,8V.47A.47.47,0,0,1,.47,0H3.28a.47.47,0,0,1,.46.47v1.4a.47.47,0,1,1-.93,0ZM4.68,6.08a.46.46,0,0,0-.47-.46H1.4a.45.45,0,0,0-.46.46V7a.46.46,0,0,0,.46.47H4.21A.47.47,0,0,0,4.68,7Z"},"7":{"w":4.68,"path":"M.94,1.4A.47.47,0,0,1,1.4.94H3.28a.45.45,0,0,1,.46.46V2.8a.47.47,0,0,1-.27.43l-1.32.59a.46.46,0,0,0-.28.43V8a.47.47,0,0,0,.94,0V4.86a.46.46,0,0,1,.27-.43L4.4,3.84a.47.47,0,0,0,.28-.43V.47A.44.44,0,0,0,4.54.14.44.44,0,0,0,4.21,0H.47A.47.47,0,0,0,0,.47V2.34a.47.47,0,0,0,.47.47.48.48,0,0,0,.47-.47Z"},"8":{"w":6.55,"path":"M2.34.94H4.21a.46.46,0,0,1,.47.46V3.28a.46.46,0,0,1-.47.46H2.34a.46.46,0,0,1-.47-.46V1.4A.46.46,0,0,1,2.34.94ZM1.87,7V5.15a.47.47,0,0,1,.47-.47H4.21a.47.47,0,0,1,.47.47V7a.47.47,0,0,1-.47.47H2.34A.47.47,0,0,1,1.87,7ZM6.08,4.21a.46.46,0,0,1-.46-.47h0V.47A.47.47,0,0,0,5.15,0H1.4A.48.48,0,0,0,.93.47V3.74h0a.47.47,0,0,1-.47.47h0A.47.47,0,0,0,0,4.68V8a.47.47,0,0,0,.47.46H6.08A.47.47,0,0,0,6.55,8V4.68a.47.47,0,0,0-.47-.47Z"},"9":{"w":5.62,"path":"M5.48.14A.45.45,0,0,0,5.15,0H.47A.47.47,0,0,0,0,.47V4.21a.47.47,0,0,0,.47.47H3.28a.46.46,0,0,1,.46.47V8a.47.47,0,0,0,.47.46h.94A.47.47,0,0,0,5.62,8V.47A.48.48,0,0,0,5.48.14ZM1.4,3.74a.45.45,0,0,1-.46-.46V1.4A.45.45,0,0,1,1.4.94H4.21a.46.46,0,0,1,.47.46V3.28a.46.46,0,0,1-.47.46Z"}};
+
+  // E13-B digit outlines: Zachary Schneider, SIL OFL 1.1. See MICR-LICENSE.txt.
+  const micrMarkup = (value, maxWidth, height=53) => {
+    const chars=Array.from(String(value)); const advance=8.6;
+    const scale=Math.min(height/8.42,maxWidth/Math.max(advance,chars.length*advance));
+    return `<g transform="scale(${scale})">${chars.map((char,i)=> {
+      const glyph=MICR_GLYPHS[char];
+      return glyph ? `<path transform="translate(${i*advance+(7-glyph.w)/2} 0)" d="${glyph.path}"/>` : `<text x="${i*advance}" y="8.15" style="font-family:monospace" font-size="9">${escapeXml(char)}</text>`;
+    }).join("")}</g>`;
   };
-  const fitTextToWidth = (node) => { const maxWidth = Number(node.dataset.maxWidth || 0); if (!maxWidth || typeof node.getComputedTextLength !== "function") return; let fontSize = Number(node.getAttribute("font-size")) || Number(window.getComputedStyle(node).fontSize.replace("px", "")); while (node.getComputedTextLength() > maxWidth && fontSize > 24) { fontSize -= 1; node.setAttribute("font-size", String(fontSize)); } };
+  const buildTicketSvg = (f, ticketNumber) => {
+    const mono=true; // Artwork is always grayscale; yellow only simulates the paper.
+    const paper=mono?"#ffffff":"#fff6cf", stub=mono?"#f4f4f4":"#f6e7a6", ink=mono?"#202020":"#20221f", dark=mono?"#222222":"#202822", mid=mono?"#383838":"#394333", accent=mono?"#ffffff":"#f4d44d", muted=mono?"#686868":"#736642", rule=mono?"#cccccc":"#d4c58b";
+    const school=splitLines(f.schoolName,["Clayton Brown Public School","& Hearst High School"],2),desc=splitLines(f.descriptionText,["Proceeds to be used for a school trip"],2);
+    const num=escapeXml(ticketNumber || "0001");
+    return `<svg xmlns="http://www.w3.org/2000/svg" class="ticket-svg" viewBox="0 0 3000 1000" role="img" aria-label="Raffle ticket ${num}">
+    <style>text{font-family:Bahnschrift,"Segoe UI",Arial,sans-serif}.number{font-family:Bahnschrift,"Arial Narrow",Arial,sans-serif;font-weight:700}@media print{.paper-simulation{filter:none!important}}</style>
+    <defs><filter id="yellowPaperTint" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".965 0 0 0 0  0 .88 0 0 0  0 0 .43 0 0  0 0 0 1 0"/></filter><filter id="monoLogo"><feColorMatrix type="saturate" values="0"/></filter>
+    <linearGradient id="heroInk" x1="0" x2="1" y1="0" y2="1"><stop stop-color="${mid}"/><stop offset="1" stop-color="${dark}"/></linearGradient>
+    <pattern id="securityLines" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M0 30L30 0" stroke="${ink}" stroke-width="1" opacity=".055"/></pattern></defs>
+    <g class="paper-simulation" ${f.backgroundTheme === "yellow" ? 'filter="url(#yellowPaperTint)"' : ""}>
+    <rect width="3000" height="1000" fill="${paper}"/><rect width="850" height="1000" fill="${stub}"/>
+    <rect x="850" width="2150" height="225" fill="${dark}"/><rect x="850" y="225" width="2150" height="9" fill="${accent}"/>
+    <rect width="850" height="230" fill="url(#securityLines)"/>
+    <image href="data:image/png;base64,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" x="55" y="52" width="112" height="112" ${mono?'filter="url(#monoLogo)"':''}/>
+    ${renderTextLines(school,{x:190,y:91,lineHeight:49,fontSize:40,fontWeight:700,fill:ink,maxWidth:600})}
+    <rect x="55" y="187" width="250" height="42" rx="21" fill="${ink}"/><text x="180" y="216" text-anchor="middle" font-size="23" fill="${paper}" letter-spacing="3">RETURN STUB</text>
+    <text data-permit-label="stub" x="55" y="269" fill="${ink}" font-size="30" data-max-width="735">Permit: ${escapeXml(f.permitNumber)}</text>
+    <g fill="${muted}" font-size="27" letter-spacing="3"><text x="55" y="312">NAME</text><text x="55" y="480">ADDRESS</text><text x="55" y="711">PHONE</text></g>
+    <path d="M55 390H790 M55 558H790 M55 636H790 M55 789H790" stroke="${muted}" stroke-width="2" opacity=".65"/>
+    <image href="data:image/png;base64,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" x="930" y="43" width="138" height="138" ${mono?'filter="url(#monoLogo)"':''}/>
+    ${renderTextLines(school,{x:1102,y:99,lineHeight:66,fontSize:58,fontWeight:700,fill:'#ffffff',maxWidth:1430})}
+    <text data-permit-label="main" x="1102" y="204" fill="${accent}" font-size="29" data-max-width="1430">Permit: ${escapeXml(f.permitNumber)}</text>
+    <text x="2910" y="75" text-anchor="end" fill="${accent}" font-size="25" letter-spacing="4">TICKET NO.</text>
+    <text data-ticket-number="main" x="2910" y="156" text-anchor="end" fill="#ffffff" class="number" font-size="76" data-max-width="330">${num}</text>
+    <path d="M945 290H2620L2484 600H945Q930 600 930 585V305Q930 290 945 290Z" fill="${rule}" opacity=".65"/>
+    <path data-raffle-half="left" d="M945 278H2620L2484 588H945Q930 588 930 573V293Q930 278 945 278Z" fill="url(#heroInk)"/>
+
+    <rect x="972" y="317" width="16" height="246" rx="8" fill="${accent}"/>
+    <text x="1025" y="363" fill="${accent}" font-size="35" letter-spacing="5">MAXIMUM VALUE OF</text>
+    <text x="1010" y="559" fill="#ffffff" font-size="218" font-weight="700" letter-spacing="-6" data-max-width="1070">${escapeXml(f.prizeAmount)}</text>
+    <g aria-label="50/50 raffle" data-diagonal-raffle="true">
+      <path data-raffle-half="right" d="M2644 320H2905Q2920 320 2920 335V615Q2920 630 2905 630H2508Z" fill="${dark}"/>
+      <text x="2350" y="510" text-anchor="middle" fill="#ffffff" style="font-family:Impact,Arial Black,sans-serif" font-size="224" letter-spacing="-4">50</text>
+      <text x="2740" y="552" text-anchor="middle" fill="#ffffff" style="font-family:Impact,Arial Black,sans-serif" font-size="224" letter-spacing="-4">50</text>
+      <text x="2350" y="559" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">RAFFLE</text>
+      <text x="2740" y="601" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">DRAW</text>
+    </g>
+    <text x="935" y="685" fill="${ink}" font-size="44" font-weight="700" data-max-width="1950">${escapeXml(f.drawDateLine)}</text>
+    <text x="935" y="742" fill="${muted}" font-size="35" data-max-width="1950">${escapeXml(f.drawLocationLine)}</text>
+    ${renderTextLines(desc,{x:935,y:795,lineHeight:34,fontSize:28,fill:muted,maxWidth:1240})}
+    <text x="2910" y="808" text-anchor="end" fill="${ink}" font-size="30" font-weight="700" data-max-width="680">${escapeXml(f.footerSummary)}</text>
+    <rect y="870" width="3000" height="130" fill="${mono?'#ffffff':'#fffcf0'}"/>
+    <path d="M0 870H3000" stroke="${rule}" stroke-width="2"/>
+    <path d="M850 20V980" stroke="${muted}" stroke-width="3" stroke-dasharray="8 12" opacity=".65"/>
+    <g fill="${muted}" font-size="21" letter-spacing="3"><text x="55" y="907">PERMIT</text><text x="490" y="907">SERIAL</text><text x="935" y="907">PERMIT</text><text x="2260" y="907">SERIAL</text></g>
+    <g fill="${ink}" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(55 927)">${micrMarkup(f.permitNumber,390,44)}</g>
+    <g data-micr-number="stub" data-code-width="300" fill="${ink}" aria-label="Serial ${num}" transform="translate(490 927)">${micrMarkup(ticketNumber,300,44)}</g>
+    <g fill="${ink}" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(935 927)">${micrMarkup(f.permitNumber,900,44)}</g>
+    <g data-micr-number="main" data-code-width="650" fill="${ink}" aria-label="Serial ${num}" transform="translate(2260 927)">${micrMarkup(ticketNumber,650,44)}</g>
+    </g></svg>`;
+  };
+  const fitTextToWidth = (node) => { const maxWidth = Number(node.dataset.maxWidth || 0); if (!maxWidth || typeof node.getComputedTextLength !== "function") return; let fontSize = Number(node.getAttribute("font-size")) || Number(window.getComputedStyle(node).fontSize.replace("px", "")); while (node.getComputedTextLength() > maxWidth && fontSize > 8) { fontSize -= 1; node.setAttribute("font-size", String(fontSize)); } };
   const fitPreviewText = () => preview.querySelectorAll("[data-max-width]").forEach(fitTextToWidth);
   const updateThemeVars = (themeKey) => { const theme = THEME_PRESETS[themeKey] || THEME_PRESETS.yellow; document.documentElement.style.setProperty("--page-bg", theme.pageBg); document.documentElement.style.setProperty("--ticket-surface", theme.ticketSurface); document.documentElement.style.setProperty("--card-shadow", theme.shadow); };
   const syncPreviewPositionInput = () => { const count = state.generatedNumbers.length || 1; previewPositionInput.max = String(count); previewPositionInput.value = String(Math.min(state.previewIndex + 1, count)); };
-  const renderPreview = () => { const currentNumber = state.generatedNumbers[state.previewIndex] || state.generatedNumbers[0] || "0001"; preview.innerHTML = buildTicketSvg(state.form, currentNumber); fitPreviewText(); const total = state.generatedNumbers.length || 1; previewMeta.textContent = `Preview ${Math.min(state.previewIndex + 1, total)} / ${total}`; currentNumberBadge.textContent = currentNumber; batchSummaryTitle.textContent = `Current Batch: ${total} ticket${total === 1 ? "" : "s"}`; batchSummaryText.textContent = state.batchMessage; prevBtn.disabled = total <= 1 || state.previewIndex === 0; nextBtn.disabled = total <= 1 || state.previewIndex >= total - 1; printCurrentBtn.disabled = total === 0; printBatchBtn.disabled = total === 0; exportCurrentBtn.disabled = total === 0; exportBatchBtn.disabled = total === 0; syncPreviewPositionInput(); };
-  const renderAll = ({ resetIndex = false } = {}) => { state.form = collectFormState(); updateThemeVars(state.form.backgroundTheme); const { numbers, message } = buildNumberList(state.form); state.generatedNumbers = numbers.length ? numbers : ["0001"]; state.batchMessage = message || "Generated 1 number."; if (resetIndex) state.previewIndex = 0; if (state.previewIndex >= state.generatedNumbers.length) state.previewIndex = Math.max(0, state.generatedNumbers.length - 1); renderPreview(); };
+  const renderPreview = () => { const currentNumber = state.generatedNumbers[state.previewIndex] || state.generatedNumbers[0] || "0001"; preview.innerHTML = buildTicketSvg(state.form, currentNumber); fitPreviewText(); const total = state.generatedNumbers.length; previewMeta.textContent = `Preview ${Math.min(state.previewIndex + 1, total)} / ${total}`; currentNumberBadge.textContent = currentNumber; batchSummaryTitle.textContent = `Current Batch: ${total} ticket${total === 1 ? "" : "s"}`; batchSummaryText.textContent = state.batchMessage; prevBtn.disabled = total <= 1 || state.previewIndex === 0; nextBtn.disabled = total <= 1 || state.previewIndex >= total - 1; for (const button of [printCurrentBtn, printBatchBtn, exportCurrentBtn, exportBatchBtn]) button.disabled = total === 0 || outputBusy; syncPreviewPositionInput(); renderSheetPreview(); };
+  const renderAll = ({ resetIndex = false } = {}) => { state.form = collectFormState(); updateThemeVars(state.form.backgroundTheme); const { numbers, message } = buildNumberList(state.form); state.generatedNumbers = numbers; state.batchMessage = message || "Generated 1 number."; if (resetIndex) state.previewIndex = 0; if (state.previewIndex >= state.generatedNumbers.length) state.previewIndex = Math.max(0, state.generatedNumbers.length - 1); renderPreview(); };
   const createSvgBlobUrl = (svgMarkup) => URL.createObjectURL(new Blob([svgMarkup], { type: "image/svg+xml;charset=utf-8" }));
   const svgToPngBlob = (svgMarkup) => new Promise((resolve, reject) => { const objectUrl = createSvgBlobUrl(svgMarkup); const image = new Image(); image.onload = () => { URL.revokeObjectURL(objectUrl); const canvas = document.createElement("canvas"); canvas.width = 3000; canvas.height = 1000; const context = canvas.getContext("2d"); if (!context) { reject(new Error("The browser could not create a PNG canvas.")); return; } context.clearRect(0, 0, canvas.width, canvas.height); context.drawImage(image, 0, 0, canvas.width, canvas.height); canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("PNG export failed.")), "image/png"); }; image.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("SVG to image conversion failed. If you opened the page as a local file, try serving it through a local static server before exporting.")); }; image.src = objectUrl; });
   const downloadBlob = (blob, filename) => { const link = document.createElement("a"); const url = URL.createObjectURL(blob); link.href = url; link.download = filename; document.body.append(link); link.click(); link.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 4000); };
-  const getSnapshotForOutput = () => { renderAll(); return { form: { ...state.form }, numbers: [...state.generatedNumbers] }; };
-  const openPrintWindow = (numbers) => { const snapshot = getSnapshotForOutput(); const tickets = numbers.map((number) => `<section class="print-ticket">${buildTicketSvg(snapshot.form, number)}</section>`).join(""); const printWindow = window.open("", "_blank", "noopener,noreferrer"); if (!printWindow) { actionStatus.textContent = "The browser blocked the print window. Allow pop-ups for this page and try again."; return; } printWindow.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Raffle Ticket Print</title><style>* { box-sizing: border-box; } body { margin: 0; padding: 0.18in; background: white; font-family: "Bahnschrift", "Segoe UI", Arial, sans-serif; } .print-ticket { break-after: page; page-break-after: always; } .print-ticket:last-child { break-after: auto; page-break-after: auto; } svg { width: 100%; height: auto; display: block; } @page { size: landscape; margin: 0.2in; }</style></head><body>${tickets}</body></html>`); printWindow.document.close(); printWindow.focus(); printWindow.addEventListener("load", () => { window.setTimeout(() => printWindow.print(), 250); }); actionStatus.textContent = `Opened a print window with ${numbers.length} ticket(s).`; };
-  const exportNumbersAsPng = async (numbers) => { const snapshot = getSnapshotForOutput(); actionStatus.textContent = `Exporting ${numbers.length} PNG file(s)...`; exportCurrentBtn.disabled = true; exportBatchBtn.disabled = true; try { for (let index = 0; index < numbers.length; index += 1) { const number = numbers[index]; const blob = await svgToPngBlob(buildTicketSvg(snapshot.form, number)); downloadBlob(blob, `raffle-ticket-${sanitizeFilename(number)}.png`); actionStatus.textContent = `Exported ${index + 1} / ${numbers.length} PNG file(s).`; await pause(150); } actionStatus.textContent = `PNG export finished for ${numbers.length} ticket(s).`; } catch (error) { actionStatus.textContent = error instanceof Error ? error.message : "PNG export failed."; } finally { renderPreview(); } };
-  form.addEventListener("input", (event) => { const target = event.target; if (!(target instanceof HTMLElement)) return; renderAll({ resetIndex: target.hasAttribute("data-batch-field") }); });
+  const getSnapshotForOutput = () => { renderAll(); return { form: { ...state.form }, numbers: state.generatedNumbers }; };
+  const setOutputBusy = (busy) => {
+    outputBusy = busy; cancelOutputBtn.hidden = !busy;
+    for (const button of document.querySelectorAll("[data-forward]")) button.disabled=busy || !state.generatedNumbers.length;
+    for (const control of form.querySelectorAll("input, textarea, select")) control.disabled = busy;
+    renderPreview();
+  };
+  const fittedSvg = (formState, number) => {
+    const host = document.createElement("div");
+    host.style.cssText = "position:fixed;left:-10000px;width:1200px;visibility:hidden";
+    host.innerHTML = buildTicketSvg(formState, number); document.body.append(host);
+    host.querySelectorAll("[data-max-width]").forEach(fitTextToWidth);
+    const markup = host.innerHTML; host.remove(); return markup;
+  };
+  const prepareTicketRenderer = (formState) => {
+    const host=document.createElement("div"); host.innerHTML=fittedSvg(formState,"0000");
+    const template=host.firstElementChild;
+    const context=document.createElement("canvas").getContext("2d");
+    return number => {
+      const svg=template.cloneNode(true);
+      svg.querySelectorAll("[data-ticket-number]").forEach(node => {
+        node.textContent=number;
+        const size=76;
+        context.font=`700 ${size}px Bahnschrift, "Arial Narrow", Arial, sans-serif`;
+        const width=context.measureText(number).width;
+        node.setAttribute("font-size", Math.min(size,size*Number(node.dataset.maxWidth)/Math.max(1,width)));
+      });
+      svg.querySelectorAll("[data-micr-number]").forEach(node => { node.innerHTML=micrMarkup(number,Number(node.dataset.codeWidth),44); node.setAttribute("aria-label",`Serial ${number}`); });
+      svg.setAttribute("aria-label",`Raffle ticket ${number}`);
+      return svg.outerHTML;
+    };
+  };
+  const getPrintLayout = f => {
+    let [pw,ph]=f.paper === "a4" ? [210,297] : [215.9,279.4];
+    if(f.orientation === "landscape") [pw,ph]=[ph,pw];
+    const w=f.ticketWidth,h=f.ticketHeight,m=f.pageMargin,g=f.cropMarks === "yes" ? Math.max(6,f.ticketGap) : f.ticketGap;
+    const valid=[w,h,m,g].every(Number.isFinite) && w>=60 && h>=20 && m>=5 && m<=40 && g>=0 && g<=20;
+    const cols=valid ? Math.max(0,Math.floor((pw-2*m+g+.001)/(w+g))) : 0;
+    const rows=valid ? Math.max(0,Math.floor((ph-2*m+g+.001)/(h+g))) : 0;
+    return {pw,ph,w,h,m,g,cols,rows,perPage:cols*rows};
+  };
+  const buildPrintSheet = (f, numbers, start, renderTicket, placeholder=false) => {
+    const l=getPrintLayout(f); const parts=[];
+    for(let i=0;i<l.perPage && (placeholder || start+i<numbers.length);i++) {
+      const x=l.m+(i%l.cols)*(l.w+l.g),y=l.m+Math.floor(i/l.cols)*(l.h+l.g);
+      const number=numbers[start+i];
+      if(number !== undefined) {
+        const ticket=renderTicket(number).replace('<svg ',`<svg x="${x}" y="${y}" width="${l.w}" height="${l.h}" `);
+        parts.push(ticket);
+      } else parts.push(`<rect x="${x}" y="${y}" width="${l.w}" height="${l.h}" fill="#fafafa" stroke="#ddd" stroke-width=".2"/>`);
+      if(f.cropMarks === "yes") {
+        for(const cx of [x,x+l.w]) for(const cy of [y,y+l.h]) {
+          const dx=cx===x?-1:1,dy=cy===y?-1:1;
+          parts.push(`<path d="M${cx+dx*.7} ${cy}h${dx*2} M${cx} ${cy+dy*.7}v${dy*2}" fill="none" stroke="#333" stroke-width=".15"/>`);
+        }
+      }
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${l.pw} ${l.ph}" width="${l.pw}mm" height="${l.ph}mm">${parts.join("")}</svg>`;
+  };
+  const renderSheetPreview = () => {
+    const f=state.form,l=getPrintLayout(f),host=document.getElementById("sheetPreview");
+    const total=state.generatedNumbers.length;
+    document.getElementById("layoutSummary").textContent=l.perPage ? `${l.cols} × ${l.rows} · ${l.perPage} per sheet · ${Math.ceil(total/l.perPage).toLocaleString()} sheets` : "Ticket does not fit. Reduce size or change orientation.";
+    host.innerHTML=buildPrintSheet(f,state.generatedNumbers,0,prepareTicketRenderer(f),true);
+    host.firstElementChild.style.background=f.backgroundTheme === "yellow" ? "#f6e06e" : "#ffffff";
+    if(f.cardReference === "yes") host.insertAdjacentHTML("beforeend",`<div class="card-scale"><div class="credit-card" style="width:${85.6/l.pw*100}%"><strong>CREDIT CARD</strong><span>85.60 × 53.98 mm</span></div><p>Same scale as the paper above · reference only</p></div>`);
+    for(const button of [printCurrentBtn,printBatchBtn]) button.disabled=outputBusy || !total || !l.perPage;
+  };
+  const openPrintWindow = async (numbers) => {
+    if (outputBusy || !numbers.length) return;
+    const snapshot = getSnapshotForOutput(); const renderTicket=prepareTicketRenderer({...snapshot.form, backgroundTheme:"white"}); cancelOutput = false; setOutputBusy(true);
+    let frame;
+    try {
+      document.getElementById("printFrame")?.remove();
+      frame = document.createElement("iframe"); frame.id = "printFrame";
+      frame.title = "Prepared raffle tickets";
+      frame.style.cssText = "position:fixed;left:-10000px;top:0;width:1000px;height:800px;border:0";
+      document.body.append(frame);
+      const doc = frame.contentDocument;
+      const layout=getPrintLayout(snapshot.form), perPage=layout.perPage;
+      if(!perPage) throw new Error("Ticket does not fit on the selected paper. Reduce its size or change orientation.");
+      doc.open(); doc.write(`<!doctype html><html><head><title>Raffle tickets</title><style>
+        *{box-sizing:border-box}html,body{margin:0;padding:0}
+        @page{size:${layout.pw}mm ${layout.ph}mm;margin:0}
+        .sheet{width:${layout.pw}mm;height:${layout.ph}mm;break-after:page;page-break-after:always;overflow:hidden}
+        .sheet:last-child{break-after:auto;page-break-after:auto}svg{display:block}
+        *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      </style></head><body></body></html>`); doc.close();
+      for(let start=0;start<numbers.length;start+=perPage) {
+        if(cancelOutput) throw new Error("Print preparation cancelled.");
+        const sheet=doc.createElement("section");sheet.className="sheet";
+        sheet.innerHTML=buildPrintSheet(snapshot.form,numbers,start,renderTicket);doc.body.append(sheet);
+        actionStatus.textContent=`Preparing print: ${Math.min(start+perPage,numbers.length).toLocaleString()} / ${numbers.length.toLocaleString()} tickets…`;
+        if(start % (perPage*5) === 0) await pause(0);
+      }
+      await doc.fonts.ready;
+      await Promise.all(Array.from(doc.images, image => image.decode().catch(() => {})));
+      if (cancelOutput) throw new Error("Print preparation cancelled.");
+      await pause(100);
+      frame.contentWindow.focus(); frame.contentWindow.print();
+      actionStatus.textContent=`Prepared all ${numbers.length.toLocaleString()} tickets (${Math.ceil(numbers.length/perPage).toLocaleString()} sheets). Choose a printer or Save as PDF in the print dialog.`;
+    } catch(error) { frame?.remove(); actionStatus.textContent=error.message || "Printing failed. Please try again."; }
+    finally { setOutputBusy(false); }
+  };
+  const exportNumbersAsPng = async (numbers) => {
+    if (outputBusy || !numbers.length) return;
+    const snapshot = getSnapshotForOutput(); const renderTicket=prepareTicketRenderer({...snapshot.form, backgroundTheme:"white"}); cancelOutput=false; setOutputBusy(true);
+    try {
+      for(let index=0;index<numbers.length;index++) {
+        if(cancelOutput) throw new Error(`Export cancelled after ${index} downloads.`);
+        const number=numbers[index];
+        const blob=await svgToPngBlob(renderTicket(number));
+        downloadBlob(blob,`raffle-ticket-${index+1}-${sanitizeFilename(number)}.png`);
+        actionStatus.textContent=`Sent ${index+1} / ${numbers.length} PNG downloads. Allow multiple downloads if the browser asks.`;
+        await pause(150);
+      }
+      actionStatus.textContent=`Sent all ${numbers.length} PNG downloads to the browser.`;
+    } catch(error) { actionStatus.textContent=error.message || "PNG export failed."; }
+    finally { setOutputBusy(false); }
+  };
+  form.addEventListener("input", (event) => { const target = event.target; if (!(target instanceof HTMLElement) || target === previewPositionInput) return; if(target.name === "ticketWidth") form.ticketHeight.value=(Number(target.value)/3).toFixed(2); if(target.name === "ticketHeight") form.ticketWidth.value=(Number(target.value)*3).toFixed(2); renderAll({ resetIndex: target.hasAttribute("data-batch-field") }); });
   prevBtn.addEventListener("click", () => { if (state.previewIndex <= 0) return; state.previewIndex -= 1; renderPreview(); });
   nextBtn.addEventListener("click", () => { if (state.previewIndex >= state.generatedNumbers.length - 1) return; state.previewIndex += 1; renderPreview(); });
-  previewPositionInput.addEventListener("change", () => { const total = state.generatedNumbers.length || 1; const rawValue = sanitizeNumber(previewPositionInput.value, 1); state.previewIndex = Math.min(Math.max(rawValue, 1), total) - 1; renderPreview(); });
+  previewPositionInput.addEventListener("change", () => { const total = state.generatedNumbers.length; const rawValue = sanitizeNumber(previewPositionInput.value, 1); state.previewIndex = Math.min(Math.max(rawValue, 1), total) - 1; renderPreview(); });
   printCurrentBtn.addEventListener("click", () => { const snapshot = getSnapshotForOutput(); const current = snapshot.numbers[state.previewIndex] || snapshot.numbers[0]; openPrintWindow([current]); });
   printBatchBtn.addEventListener("click", () => { const snapshot = getSnapshotForOutput(); openPrintWindow(snapshot.numbers); });
   exportCurrentBtn.addEventListener("click", async () => { const snapshot = getSnapshotForOutput(); const current = snapshot.numbers[state.previewIndex] || snapshot.numbers[0]; await exportNumbersAsPng([current]); });
   exportBatchBtn.addEventListener("click", async () => { const snapshot = getSnapshotForOutput(); await exportNumbersAsPng(snapshot.numbers); });
+  document.querySelectorAll("[data-forward]").forEach(button => button.addEventListener("click",()=>document.getElementById(button.dataset.forward).click()));
+  form.addEventListener("submit", event => event.preventDefault());
   renderAll({ resetIndex: true });
 </script>
 </body>
