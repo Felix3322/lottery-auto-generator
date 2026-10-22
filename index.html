@@ -223,7 +223,7 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     return { numbers, message: `Generated ${length.toLocaleString()} numbers. Full range: ${numbers[0]} → ${numbers[length-1]}.` };
   };
   const secureNumberMarkup = SecureNumbers.draw;
-  const numberStripHeight = (f,n) => Math.min(90,390*70/(Array.from(f.permitNumber).length*34+16),300*70/(Array.from(String(n)).length*34+16));
+  const numberStripHeight = (f,n) => Math.min(90,390*70/SecureNumbers.measure(f.permitNumber),300*70/SecureNumbers.measure(n));
   const buildTicketSvg = (f, ticketNumber) => {
     const mono=true; // Artwork is always grayscale; yellow only simulates the paper.
     const paper=mono?"#ffffff":"#fff6cf", stub=mono?"#f4f4f4":"#f6e7a6", ink=mono?"#202020":"#20221f", dark=mono?"#222222":"#202822", mid=mono?"#383838":"#394333", accent=mono?"#ffffff":"#f4d44d", muted=mono?"#686868":"#736642", rule=mono?"#cccccc":"#d4c58b";

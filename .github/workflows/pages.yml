@@ -9,6 +9,7 @@ on:
       - verify.html
       - SECURITY-GUIDE.txt
       - "vendor/**"
+      - "fonts/**"
       - FONT-CREDITS.txt
       - .github/workflows/pages.yml
   workflow_dispatch:
@@ -34,7 +35,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html verify.html secure-number.js ticket-crypto.js issuer.js verify.js offline.js sw.js FONT-CREDITS.txt SECURITY-GUIDE.txt _site/
-          cp -r vendor _site/
+          cp -r vendor fonts _site/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

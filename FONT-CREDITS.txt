@@ -1,4 +1,4 @@
-Permit and serial numbers use matching regular-weight system monospace type (Consolas / Courier New). Pale loop engraving is original decorative SVG artwork. No official FE-Schrift or E-13B font is embedded.
+FE-Mittelschrift: GL-Nummernschild-Mtl, Copyright (C) 2009-2026 Gutenberg Labo. Source: https://github.com/Gutenberg-Labo/GL-Nummernschild . Original TTF and full redistribution license are in fonts/. SVG outlines are derived directly from this font; no synthetic bolding or horizontal distortion.
 Visual lettering is not a cryptographic authenticity check. Ed25519 signatures are the separate optional verification mechanism.
 
 QR encoding: qrcode-generator 1.4.4, Copyright (c) 2009 Kazuhiko Arase, MIT license (notice in vendor/qrcode.js).

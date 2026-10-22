@@ -37,7 +37,7 @@ RAFFLE ISSUING AND IN-PERSON REDEMPTION
 
 WHAT THE FEATURES DO
 
-- Permit and serial numbers share the same regular-weight system monospace type,
+- Permit and serial numbers share the same FE-Mittelschrift type (GL-Nummernschild-Mtl),
   size and baseline over pale loop engraving. Matching values share the same
   motif on both halves. This decorative pattern does not authenticate a ticket.
 - Ed25519 signs an ASCII RFL1-prefixed Base64url JSON payload containing protocol
