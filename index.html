@@ -255,7 +255,6 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
 
     <rect x="972" y="316" width="10" height="236" rx="5" fill="${accent}"/>
     <text x="1020" y="350" fill="${accent}" font-size="${f.securityEnabled?28:35}" letter-spacing="${f.securityEnabled?3:5}">MAXIMUM VALUE OF</text>
-    <path d="M1020 376H${f.securityEnabled?1640:2080}" stroke="#ffffff" stroke-opacity=".24" stroke-width="2"/>
     <text data-prize-value="true" x="1020" y="530" fill="#ffffff" style="font-family:Arial,sans-serif" font-size="${f.securityEnabled?174:218}" font-weight="800" letter-spacing="-2" data-max-width="${f.securityEnabled?650:1070}">${escapeXml(f.prizeAmount)}</text>
     <g aria-label="50/50 raffle" data-diagonal-raffle="true">
       <path data-raffle-half="right" d="${f.securityEnabled?'M2094 320H2305Q2320 320 2320 335V615Q2320 630 2305 630H1958Z':'M2644 320H2905Q2920 320 2920 335V615Q2920 630 2905 630H2508Z'}" fill="${dark}"/>
@@ -270,7 +269,6 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     ${renderTextLines(desc,{x:935,y:f.securityEnabled?780:795,lineHeight:f.securityEnabled?30:34,fontSize:f.securityEnabled?25:28,fill:muted,maxWidth:1240})}
     <text x="${f.securityEnabled?935:2910}" y="${f.securityEnabled?840:808}" text-anchor="${f.securityEnabled?'start':'end'}" fill="${ink}" font-size="${f.securityEnabled?23:30}" font-weight="700" data-max-width="${f.securityEnabled?1370:680}">${escapeXml(f.footerSummary)}</text>
     <rect y="855" width="3000" height="145" fill="${mono?'#ffffff':'#fffcf0'}"/>
-    <path d="M0 855H3000" stroke="${rule}" stroke-width="2"/>
     <path d="M850 20V980" stroke="${muted}" stroke-width="3" stroke-dasharray="8 12" opacity=".65"/>
     <g fill="${muted}" font-size="21" letter-spacing="3"><text x="55" y="887">PERMIT</text><text x="490" y="887">SERIAL</text><text x="935" y="887">PERMIT</text><text x="2260" y="887">SERIAL</text></g>
     <g fill="${ink}" data-secure-permit="true" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(55 899)">${secureNumberMarkup(f.permitNumber,390,stripHeight)}</g>
@@ -278,6 +276,7 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     <g fill="${ink}" data-secure-permit="true" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(935 899)">${secureNumberMarkup(f.permitNumber,390,stripHeight)}</g>
     <g data-secure-serial="main" data-code-width="650" fill="${ink}" aria-label="Serial ${num}" transform="translate(2260 899)">${secureNumberMarkup(ticketNumber,650,stripHeight)}</g>
     ${TicketSecurity.band(f,ticketNumber)}
+    <path data-number-divider="true" d="M0 855H3000" stroke="${rule}" stroke-width="2"/>
     </g></svg>`;
   };
   const fitTextToWidth = (node) => { const maxWidth = Number(node.dataset.maxWidth || 0); if (!maxWidth || typeof node.getComputedTextLength !== "function") return; let fontSize = Number(node.getAttribute("font-size")) || Number(window.getComputedStyle(node).fontSize.replace("px", "")); while (node.getComputedTextLength() > maxWidth && fontSize > 8) { fontSize -= 1; node.setAttribute("font-size", String(fontSize)); } };
@@ -318,7 +317,7 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
       });
       svg.querySelectorAll("[data-secure-permit]").forEach((node,i) => { node.innerHTML=secureNumberMarkup(formState.permitNumber,390,numberStripHeight(formState,number)); node.querySelectorAll("[data-max-width]").forEach(fitTextToWidth); });
       svg.querySelectorAll("[data-secure-serial]").forEach(node => { node.innerHTML=secureNumberMarkup(number,Number(node.dataset.codeWidth),numberStripHeight(formState,number)); node.setAttribute("aria-label",`Serial ${number}`); });
-      if(formState.securityEnabled){const old=svg.querySelector("[data-auth-band]");old?.remove();svg.querySelector(".paper-simulation").insertAdjacentHTML("beforeend",TicketSecurity.band(formState,number));}
+      if(formState.securityEnabled){const old=svg.querySelector("[data-auth-band]");old?.remove();svg.querySelector("[data-number-divider]").insertAdjacentHTML("beforebegin",TicketSecurity.band(formState,number));}
       svg.setAttribute("aria-label",`Raffle ticket ${number}`);
       return svg.outerHTML;
     };

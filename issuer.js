@@ -6,7 +6,7 @@ window.TicketSecurity = (() => {
   function band(f,number) {
     if(!f.securityEnabled)return '';
     const item=TicketCrypto.cached(f,number);
-    const qr=item?`<svg data-signed-qr="true" data-token="${esc(item.token)}" x="2330" y="234" width="620" height="620" viewBox="0 0 ${item.modules} ${item.modules}"><rect width="${item.modules}" height="${item.modules}" fill="#fff"/><path d="${item.path}" fill="#000" shape-rendering="crispEdges"/></svg>`:`<rect x="2330" y="234" width="620" height="620" fill="#f5f5f5" stroke="#ccc" stroke-width="2"/><text x="2640" y="554" text-anchor="middle" font-size="28" fill="#555">UNSIGNED PREVIEW</text>`;
+    const qr=item?`<svg data-signed-qr="true" data-token="${esc(item.token)}" x="2335" y="234" width="610" height="610" viewBox="0 0 ${item.modules} ${item.modules}"><rect width="${item.modules}" height="${item.modules}" fill="#fff"/><path d="${item.path}" fill="#000" shape-rendering="crispEdges"/></svg>`:`<rect x="2335" y="234" width="610" height="610" fill="#f5f5f5" stroke="#ccc" stroke-width="2"/><text x="2640" y="554" text-anchor="middle" font-size="28" fill="#555">UNSIGNED PREVIEW</text>`;
     return `<g data-auth-band="true">${qr}</g>`;
   }
   function outputAllowed(f){return !f.securityEnabled||TicketCrypto.ready;}
