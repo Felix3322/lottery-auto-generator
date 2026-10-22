@@ -1,0 +1,61 @@
+RAFFLE ISSUING AND IN-PERSON REDEMPTION
+
+1. Finalize the school/event, permit, prize, draw date, location and ticket terms.
+2. Replace the batch ID for every new draw. Ticket numbers must be unique within
+   that batch. The generator rejects duplicate custom numbers in signed batches.
+3. Enable Ed25519 signature + QR. Generate a new issuer key, or restore your own
+   previously saved PRIVATE issuer key file. This feature needs a browser with
+   Web Crypto Ed25519 support (use a current Chrome, Edge, Firefox or Safari).
+4. Save the PRIVATE backup immediately. It contains the signing key and event
+   settings. Keep it with the issuer, off the public website and away from ticket
+   buyers or redemption staff. Keys are never uploaded or saved in localStorage.
+   The page holds the key in memory until closed; losing it prevents further
+   issuance under that key. The backup is not password-encrypted: protect the file.
+5. Export the PUBLIC verifier file after finalizing the event settings. Transfer
+   it directly to staff on the single redemption device. It contains no private
+   key. If the event settings change, export the public file again. A QR does not
+   supply its own trusted key: only the separately imported file is trusted.
+6. Print a sample before the complete run. Use yellow paper, black-and-white
+   printing, 100%/Actual Size, and no browser headers/footers. Signed tickets keep
+   the same dimensions, with one QR on the main ticket and none on the stub. The QR has a four-module quiet
+   zone and requires a calculated module width of at least 0.30 mm. The page
+   rejects print/export sizes that are too small for the QR. Test a real printed
+   sample on the redemption device: camera, printer and paper quality still matter.
+7. Open verify.html on the redemption device BEFORE the event. Wait for the
+   offline-ready status, import the PUBLIC file, then test reload and verification
+   in airplane mode. The offline ZIP can also be extracted with all files kept
+   together; a local file may not support camera access, so use a QR image or paste.
+8. Scan the ticket with the camera, upload a QR photo, or paste the raw QR text.
+   Confirm the displayed verified number, permit, event and prize match the paper.
+   Mark the match checkbox, then explicitly press Mark as redeemed before payout.
+   Scanning and signature verification alone do not mark a ticket as redeemed.
+9. A second redemption is rejected in this browser's IndexedDB log. Use ONE
+   redemption device for the event: multiple disconnected devices cannot share
+   redemption status. Do not use private/incognito browsing or clear site data.
+   Export the log regularly. Log restore merges signed entries without overwriting
+   existing redemptions; load the corresponding public file before importing.
+
+WHAT THE FEATURES DO
+
+- Custom Secure Number-style lettering uses original FE-Schrift-inspired vector
+  digits, reverse type and stripes. It is not an official FE font and does not
+  authenticate tickets by itself. Ordinary permit labels remain on both halves.
+- Ed25519 signs an ASCII RFL1-prefixed Base64url JSON payload containing protocol
+  version, batch, exact serial, key fingerprint and SHA-256 event-context digest.
+  The SHA-256 digest is only part of the SIGNED payload; it is not used as a
+  stand-alone authentication code, and no public fixed salt acts as a secret.
+- The signature binds ticket numbers and event context. The QR does not prevent
+  copying an entire genuine ticket. Compare the physical ticket to the verified
+  fields and use the local redemption log to reject a second presentation.
+- Redemption timestamps use the device clock. A browser user can delete local
+  data; this is a local operational log, not a tamper-proof centralized ledger.
+- Private key, signing, QR decoding and verification run locally. No external
+  verification service or CDN is needed. The service worker caches the static
+  application; public/private JSON files are selected manually from local storage.
+
+中文速用
+先确定票面信息和批次 → 生成发行密钥 → 保存 PRIVATE 私钥备份 → 导出 PUBLIC
+验票文件 → 在黄色纸上黑白试印 → 兑奖设备导入 PUBLIC 文件 → 断网试验扫码。
+兑奖时核对验签结果与纸质票号、许可证、活动和奖金一致，再点击“Mark as redeemed”。
+同一场次请使用一台兑奖设备。多台离线设备之间没有实时重复兑奖拦截；请定期导出记录。
+不要把 PRIVATE 私钥文件上传到仓库、Pages 或发送给持票人。

@@ -1,4 +1,5 @@
-E13-B digit outlines by Zachary Schneider (2021).
-Source: https://github.com/zaxbux/MICR_E13-B_Font
-License: SIL Open Font License 1.1; see MICR-LICENSE.txt.
-Digits are embedded as SVG paths. Non-numeric characters are preserved using a monospace fallback.
+Secure Number-style numerals: original SVG artwork inspired by FE-Schrift design principles. Not an official FE-Schrift font. No E-13B glyphs are used.
+Visual lettering is not a cryptographic authenticity check. Ed25519 signatures are the separate optional verification mechanism.
+
+QR encoding: qrcode-generator 1.4.4, Copyright (c) 2009 Kazuhiko Arase, MIT license (notice in vendor/qrcode.js).
+QR decoding: jsQR 1.4.0, Apache-2.0 license; see vendor/jsQR-LICENSE.txt.

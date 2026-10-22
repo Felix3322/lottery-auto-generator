@@ -50,7 +50,7 @@
     button:disabled { cursor: default; opacity: 0.45; transform: none; box-shadow: none; }
     .preview-stage { padding: 22px; border-radius: 20px; background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 38%), linear-gradient(145deg, rgba(135, 112, 42, 0.12), rgba(255, 255, 255, 0.65)); overflow-x: auto; }
     .ticket-frame { min-width: 780px; }
-    .ticket-frame svg { width: 100%; height: auto; display: block; aspect-ratio: 3 / 1; background: var(--ticket-surface); border-radius: 18px; box-shadow: 0 25px 60px var(--card-shadow); }
+    .ticket-frame > svg { width: 100%; height: auto; display: block; aspect-ratio: 3 / 1; background: var(--ticket-surface); border-radius: 18px; box-shadow: 0 25px 60px var(--card-shadow); }
     .preview-meta { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
     .status-box { margin-top: 18px; padding: 14px 16px; border-radius: 16px; background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(113, 90, 21, 0.08); }
     .status-box strong { display: block; margin-bottom: 6px; font-size: 14px; }
@@ -64,7 +64,7 @@
       .preview-shell { border: 0; box-shadow: none; background: transparent; padding: 0; }
       .preview-stage { padding: 0; background: transparent; }
       .ticket-frame { min-width: 0; }
-      .ticket-frame svg { box-shadow: none; border-radius: 0; }
+      .ticket-frame > svg { box-shadow: none; border-radius: 0; }
     }
 
     body { background-image: radial-gradient(ellipse at 80% 0%, #fff9db80, transparent 55%); }
@@ -76,7 +76,7 @@
     .preview-title h1 {font-size:28px;letter-spacing:-.03em}
     .preview-title span {max-width:540px;font-size:13px}
     .preview-stage {padding:22px 0;background:transparent;overflow:visible}
-    .ticket-frame {min-width:0} .ticket-frame svg {border-radius:12px;box-shadow:0 12px 32px var(--card-shadow)}
+    .ticket-frame {min-width:0} .ticket-frame > svg {border-radius:12px;box-shadow:0 12px 32px var(--card-shadow)}
     .preview-meta {font-size:12px} #currentNumberBadge {font-variant-numeric:tabular-nums;border-left:1px solid #a9955c60;padding-left:10px;overflow-wrap:anywhere}
     .status-box {margin-top:24px;background:#ffffff80} .caption {margin-top:16px}
     button {border-radius:10px;padding:11px 14px;font-size:12px} button:focus-visible {outline:3px solid #9d832a;outline-offset:3px}
@@ -93,6 +93,7 @@
     .card-scale{margin-top:22px}.card-scale .credit-card{border:1px solid #4b4b4b;border-radius:8px;aspect-ratio:85.6/53.98;background:linear-gradient(130deg,#f5f5f5,#d9d9d9);display:flex;flex-direction:column;justify-content:space-between;padding:5%;font-family:Arial,sans-serif;color:#333;font-size:clamp(7px,1vw,12px)}
     .card-scale p{font-size:11px;color:#555;margin:10px 0 0}.credit-card strong{letter-spacing:1px}.credit-card span{font-size:.8em}
     @media print{.layout-preview{display:none!important}}
+  .check-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}.check-row input{width:auto}.panel a{color:#665317} #signingStatus{overflow-wrap:anywhere}
   </style>
 </head>
 <body>
@@ -131,16 +132,25 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
         <p>If you fill in a custom number list, it takes priority. Otherwise numbers are generated from the start and end range.</p>
       </section>
       <section class="section">
-        <h2>Output Actions</h2><div class="field-grid compact">
+        <h2>Signed QR · optional</h2>
+<label class="check-row"><input type="checkbox" name="securityEnabled"> Enable Ed25519 signature + QR</label>
+<label>Batch ID<input name="batchId" maxlength="100" autocomplete="off"></label>
+<div class="action-group"><button type="button" id="generateKeyBtn">Generate issuer key</button></div>
+<label>Restore issuer PRIVATE key<input type="file" id="importIssuerKey" accept=".json,application/json"></label>
+<div class="action-group"><button type="button" class="secondary" id="exportPrivateBtn">Save PRIVATE backup</button><button type="button" class="secondary" id="exportPublicBtn">Export PUBLIC verifier file</button></div>
+<p id="signingStatus" role="status">Keys stay in memory. Save your private backup before closing this page.</p>
+<p>After finalizing event details, export the public file for redemption staff. Never send them the private key. Changing event details requires a new public file. Keep a unique batch ID for each draw.</p>
+<p><a href="verify.html" target="_blank" rel="noopener">Open offline redemption →</a> · <a href="SECURITY-GUIDE.txt" target="_blank" rel="noopener">Setup instructions</a></p>
+</section><section class="section"><h2>Output Actions</h2><div class="field-grid compact">
 <label>Paper<select name="paper"><option value="letter">Letter · 216 × 279 mm</option><option value="a4">A4 · 210 × 297 mm</option></select></label>
 <label>Orientation<select name="orientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
 <label>Ticket width (mm)<input name="ticketWidth" type="number" min="60" max="280" step="1" value="180"></label>
-<label>Ticket height (mm)<input name="ticketHeight" type="number" min="20" max="94" step="0.1" value="60"></label>
+<label>Ticket height (mm)<input name="ticketHeight" type="number" min="20" max="180" step="0.1" value="60"></label>
 <label>Page margin (mm)<input name="pageMargin" type="number" min="5" max="40" value="10"></label>
 <label>Ticket gap (mm)<input name="ticketGap" type="number" min="0" max="20" value="6"></label>
 <label>Crop marks<select name="cropMarks"><option value="yes">Show crop marks</option><option value="no">Hide crop marks</option></select></label>
 <label>Size reference<select name="cardReference"><option value="yes">Credit card · 85.60 × 53.98 mm</option><option value="no">Hide reference</option></select></label>
-</div><p>Width and height stay in a 3:1 ratio. Crop marks reserve at least 6 mm between tickets. Print at 100% / Actual size, with browser headers and footers off.</p>
+</div><p>The ticket keeps its proportions; enabling signed QR adds a verification strip. Crop marks reserve at least 6 mm between tickets. Print at 100% / Actual size, with browser headers and footers off.</p>
         <div class="action-row">
           <div class="action-group"><button type="button" id="printCurrentBtn">Print Current Preview</button><button type="button" id="printBatchBtn">Print Current Batch</button></div>
           <div class="action-group"><button type="button" class="secondary" id="exportCurrentBtn">Export Current PNG</button><button type="button" class="secondary" id="exportBatchBtn">Export Batch PNG</button></div>
@@ -156,9 +166,10 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     </div>
     <div class="action-group" style="margin:16px 0 0"><button type="button" data-forward="printCurrentBtn">Print preview</button><button type="button" data-forward="printBatchBtn">Print batch / PDF</button><button type="button" class="secondary" data-forward="exportCurrentBtn">Export PNG</button></div><div class="preview-stage"><div class="ticket-frame" id="ticketPreview"></div></div>
     <section class="layout-preview"><div class="layout-heading"><h2>Print layout</h2><span id="layoutSummary"></span></div><div class="paper-wrap"><div class="paper-model" id="sheetPreview"></div></div><p class="caption">Yellow is a paper simulation only; no yellow background ink is printed. Credit card reference is excluded from print. Use yellow paper, black-and-white mode and 100% / Actual size.</p></section><div class="status-box"><strong id="batchSummaryTitle">Current Batch</strong><p id="batchSummaryText">Generated 1 number. Ready to print or export.</p></div>
-    <div class="caption">Black-and-white print / PNG output · Yellow paper preview · Full number ranges, with no 500-ticket cutoff · Print directly or save as PDF. Large jobs show progress and can be cancelled.</div>
+    <p id="offlineStatus" class="caption"></p><div class="caption">Black-and-white print / PNG output · Yellow paper preview · Full number ranges, with no 500-ticket cutoff · Print directly or save as PDF. Large jobs show progress and can be cancelled.</div>
   </section>
 </main>
+<script src="vendor/qrcode.js"></script><script src="secure-number.js"></script><script src="ticket-crypto.js"></script><script src="issuer.js"></script>
 <script>
   let outputBusy = false;
   let cancelOutput = false;
@@ -191,7 +202,7 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
   const pause = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
   const attrString = (attributes) => Object.entries(attributes).filter(([, value]) => value !== undefined && value !== null && value !== "").map(([key, value]) => `${key}="${escapeXml(value)}"`).join(" ");
   const renderTextLines = (lines, options) => lines.map((line, index) => `<text ${attrString({ x: options.x, y: options.y + (index * options.lineHeight), class: options.className, fill: options.fill, "font-size": options.fontSize, "font-weight": options.fontWeight, "letter-spacing": options.letterSpacing, "text-anchor": options.textAnchor, "data-max-width": options.maxWidth })}>${escapeXml(line)}</text>`).join("");
-  const collectFormState = () => ({ paper: form.paper.value, orientation: form.orientation.value, ticketWidth: Number(form.ticketWidth.value), ticketHeight: Number(form.ticketHeight.value), pageMargin: Number(form.pageMargin.value), ticketGap: Number(form.ticketGap.value), cropMarks: form.cropMarks.value, cardReference: form.cardReference.value, backgroundTheme: form.backgroundTheme.value, schoolName: form.schoolName.value, permitNumber: form.permitNumber.value.trim(), prizeAmount: form.prizeAmount.value.trim(), descriptionText: form.descriptionText.value, drawDateLine: form.drawDateLine.value.trim(), drawLocationLine: form.drawLocationLine.value.trim(), footerSummary: form.footerSummary.value.trim(), numberPrefix: form.numberPrefix.value, numberSuffix: form.numberSuffix.value, numberStart: form.numberStart.value, numberEnd: form.numberEnd.value, numberPadding: form.numberPadding.value, customNumbers: form.customNumbers.value });
+  const collectFormState = () => ({ securityEnabled: form.securityEnabled.checked, batchId: form.batchId.value.trim(), paper: form.paper.value, orientation: form.orientation.value, ticketWidth: Number(form.ticketWidth.value), ticketHeight: Number(form.ticketHeight.value), pageMargin: Number(form.pageMargin.value), ticketGap: Number(form.ticketGap.value), cropMarks: form.cropMarks.value, cardReference: form.cardReference.value, backgroundTheme: form.backgroundTheme.value, schoolName: form.schoolName.value, permitNumber: form.permitNumber.value.trim(), prizeAmount: form.prizeAmount.value.trim(), descriptionText: form.descriptionText.value, drawDateLine: form.drawDateLine.value.trim(), drawLocationLine: form.drawLocationLine.value.trim(), footerSummary: form.footerSummary.value.trim(), numberPrefix: form.numberPrefix.value, numberSuffix: form.numberSuffix.value, numberStart: form.numberStart.value, numberEnd: form.numberEnd.value, numberPadding: form.numberPadding.value, customNumbers: form.customNumbers.value });
   const buildNumberList = (formState) => {
     const custom = formState.customNumbers.split(/[\n,，;；]+/).map(s => s.trim()).filter(Boolean);
     if (custom.length) return { numbers: custom, message: `Using all ${custom.length.toLocaleString()} custom numbers.` };
@@ -211,23 +222,14 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     }});
     return { numbers, message: `Generated ${length.toLocaleString()} numbers. Full range: ${numbers[0]} → ${numbers[length-1]}.` };
   };
-  const MICR_GLYPHS = {"0":{"w":6.37,"path":"M4.5,8.42H1.87A1.87,1.87,0,0,1,0,6.55V1.87A1.87,1.87,0,0,1,1.87,0H4.5A1.87,1.87,0,0,1,6.37,1.87V6.55A1.87,1.87,0,0,1,4.5,8.42ZM5.59,6.55V1.87A.92.92,0,0,0,4.66.94H1.71a.92.92,0,0,0-.93.93V6.55a.93.93,0,0,0,.93.94h3A.93.93,0,0,0,5.59,6.55Z"},"1":{"w":3.74,"path":"M1.87,4.21a.47.47,0,0,0,.47.47h.93a.47.47,0,0,1,.47.47V8a.46.46,0,0,1-.47.46H.47A.46.46,0,0,1,0,8V5.15a.47.47,0,0,1,.47-.47h0a.47.47,0,0,0,.47-.47V1.4h0A.46.46,0,0,0,.47.94h0A.47.47,0,0,1,.47,0H1.4a.47.47,0,0,1,.47.47V4.21Z"},"2":{"w":3.74,"path":"M1.41,4.68H3.27a.47.47,0,0,0,.47-.47V.47A.47.47,0,0,0,3.27,0H.47A.47.47,0,0,0,0,.47H0A.48.48,0,0,0,.47.94H2.34a.46.46,0,0,1,.47.46V3.27a.47.47,0,0,1-.47.47H.47A.48.48,0,0,0,0,4.22V8a.47.47,0,0,0,.47.47H3.28a.47.47,0,0,0,0-.93H1.41A.47.47,0,0,1,.94,7V5.15A.47.47,0,0,1,1.41,4.68Z"},"3":{"w":4.68,"path":"M4.21,4.21a.47.47,0,0,1-.47-.47V.47A.47.47,0,0,0,3.28,0H.47A.47.47,0,0,0,0,.47.48.48,0,0,0,.47.94H2.34a.46.46,0,0,1,.47.46V3.28a.46.46,0,0,1-.47.46H.47A.48.48,0,0,0,0,4.21a.47.47,0,0,0,.47.47H2.34a.47.47,0,0,1,.47.47V7a.47.47,0,0,1-.47.47H.47a.47.47,0,1,0,0,.93H4.21A.47.47,0,0,0,4.68,8V4.68a.47.47,0,0,0-.47-.47Z"},"4":{"w":5.62,"path":"M3.74,5.15a.46.46,0,0,1-.46.47H2.34a.47.47,0,0,1-.47-.47V.47A.47.47,0,0,0,1.4,0H.47A.47.47,0,0,0,0,.47V6.09a.47.47,0,0,0,.47.46H3.28A.46.46,0,0,1,3.74,7V8a.47.47,0,0,0,.47.46h.94A.47.47,0,0,0,5.62,8V5.15a.48.48,0,0,0-.47-.47H4.21a.48.48,0,0,0-.47.47Z"},"5":{"w":4.68,"path":"M4.21,3.74H1.41a.47.47,0,0,1-.47-.47V1.4A.45.45,0,0,1,1.4.94H4.21a.47.47,0,1,0,0-.94H.47A.47.47,0,0,0,0,.47V4.21a.47.47,0,0,0,.47.47h2.8a.47.47,0,0,1,.47.47V7a.47.47,0,0,1-.47.47H.46a.47.47,0,1,0,0,.93H4.21A.47.47,0,0,0,4.68,8V4.22A.48.48,0,0,0,4.21,3.74Z"},"6":{"w":5.62,"path":"M2.81,1.4A.46.46,0,0,0,2.34.94H1.4a.45.45,0,0,0-.46.46V4.21a.46.46,0,0,0,.46.47H5.15a.48.48,0,0,1,.47.47V8a.47.47,0,0,1-.47.46H.47A.47.47,0,0,1,0,8V.47A.47.47,0,0,1,.47,0H3.28a.47.47,0,0,1,.46.47v1.4a.47.47,0,1,1-.93,0ZM4.68,6.08a.46.46,0,0,0-.47-.46H1.4a.45.45,0,0,0-.46.46V7a.46.46,0,0,0,.46.47H4.21A.47.47,0,0,0,4.68,7Z"},"7":{"w":4.68,"path":"M.94,1.4A.47.47,0,0,1,1.4.94H3.28a.45.45,0,0,1,.46.46V2.8a.47.47,0,0,1-.27.43l-1.32.59a.46.46,0,0,0-.28.43V8a.47.47,0,0,0,.94,0V4.86a.46.46,0,0,1,.27-.43L4.4,3.84a.47.47,0,0,0,.28-.43V.47A.44.44,0,0,0,4.54.14.44.44,0,0,0,4.21,0H.47A.47.47,0,0,0,0,.47V2.34a.47.47,0,0,0,.47.47.48.48,0,0,0,.47-.47Z"},"8":{"w":6.55,"path":"M2.34.94H4.21a.46.46,0,0,1,.47.46V3.28a.46.46,0,0,1-.47.46H2.34a.46.46,0,0,1-.47-.46V1.4A.46.46,0,0,1,2.34.94ZM1.87,7V5.15a.47.47,0,0,1,.47-.47H4.21a.47.47,0,0,1,.47.47V7a.47.47,0,0,1-.47.47H2.34A.47.47,0,0,1,1.87,7ZM6.08,4.21a.46.46,0,0,1-.46-.47h0V.47A.47.47,0,0,0,5.15,0H1.4A.48.48,0,0,0,.93.47V3.74h0a.47.47,0,0,1-.47.47h0A.47.47,0,0,0,0,4.68V8a.47.47,0,0,0,.47.46H6.08A.47.47,0,0,0,6.55,8V4.68a.47.47,0,0,0-.47-.47Z"},"9":{"w":5.62,"path":"M5.48.14A.45.45,0,0,0,5.15,0H.47A.47.47,0,0,0,0,.47V4.21a.47.47,0,0,0,.47.47H3.28a.46.46,0,0,1,.46.47V8a.47.47,0,0,0,.47.46h.94A.47.47,0,0,0,5.62,8V.47A.48.48,0,0,0,5.48.14ZM1.4,3.74a.45.45,0,0,1-.46-.46V1.4A.45.45,0,0,1,1.4.94H4.21a.46.46,0,0,1,.47.46V3.28a.46.46,0,0,1-.47.46Z"}};
-
-  // E13-B digit outlines: Zachary Schneider, SIL OFL 1.1. See MICR-LICENSE.txt.
-  const micrMarkup = (value, maxWidth, height=53) => {
-    const chars=Array.from(String(value)); const advance=8.6;
-    const scale=Math.min(height/8.42,maxWidth/Math.max(advance,chars.length*advance));
-    return `<g transform="scale(${scale})">${chars.map((char,i)=> {
-      const glyph=MICR_GLYPHS[char];
-      return glyph ? `<path transform="translate(${i*advance+(7-glyph.w)/2} 0)" d="${glyph.path}"/>` : `<text x="${i*advance}" y="8.15" style="font-family:monospace" font-size="9">${escapeXml(char)}</text>`;
-    }).join("")}</g>`;
-  };
+  const secureNumberMarkup = SecureNumbers.draw;
+  const numberStripHeight = (f,n) => Math.min(90,390*74/(Array.from(f.permitNumber).length*54+16),300*74/(Array.from(String(n)).length*54+16));
   const buildTicketSvg = (f, ticketNumber) => {
     const mono=true; // Artwork is always grayscale; yellow only simulates the paper.
     const paper=mono?"#ffffff":"#fff6cf", stub=mono?"#f4f4f4":"#f6e7a6", ink=mono?"#202020":"#20221f", dark=mono?"#222222":"#202822", mid=mono?"#383838":"#394333", accent=mono?"#ffffff":"#f4d44d", muted=mono?"#686868":"#736642", rule=mono?"#cccccc":"#d4c58b";
     const school=splitLines(f.schoolName,["Clayton Brown Public School","& Hearst High School"],2),desc=splitLines(f.descriptionText,["Proceeds to be used for a school trip"],2);
-    const num=escapeXml(ticketNumber || "0001");
-    return `<svg xmlns="http://www.w3.org/2000/svg" class="ticket-svg" viewBox="0 0 3000 1000" role="img" aria-label="Raffle ticket ${num}">
+    const num=escapeXml(ticketNumber || "0001"), stripHeight=numberStripHeight(f,ticketNumber || "0001");
+    return `<svg xmlns="http://www.w3.org/2000/svg" class="ticket-svg" viewBox="0 0 3000 1000" style="aspect-ratio:3000 / 1000" role="img" aria-label="Raffle ticket ${num}">
     <style>text{font-family:Bahnschrift,"Segoe UI",Arial,sans-serif}.number{font-family:Bahnschrift,"Arial Narrow",Arial,sans-serif;font-weight:700}@media print{.paper-simulation{filter:none!important}}</style>
     <defs><filter id="yellowPaperTint" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".965 0 0 0 0  0 .88 0 0 0  0 0 .43 0 0  0 0 0 1 0"/></filter><filter id="monoLogo"><feColorMatrix type="saturate" values="0"/></filter>
     <linearGradient id="heroInk" x1="0" x2="1" y1="0" y2="1"><stop stop-color="${mid}"/><stop offset="1" stop-color="${dark}"/></linearGradient>
@@ -247,41 +249,44 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     <text data-permit-label="main" x="1102" y="204" fill="${accent}" font-size="29" data-max-width="1430">Permit: ${escapeXml(f.permitNumber)}</text>
     <text x="2910" y="75" text-anchor="end" fill="${accent}" font-size="25" letter-spacing="4">TICKET NO.</text>
     <text data-ticket-number="main" x="2910" y="156" text-anchor="end" fill="#ffffff" class="number" font-size="76" data-max-width="330">${num}</text>
-    <path d="M945 290H2620L2484 600H945Q930 600 930 585V305Q930 290 945 290Z" fill="${rule}" opacity=".65"/>
-    <path data-raffle-half="left" d="M945 278H2620L2484 588H945Q930 588 930 573V293Q930 278 945 278Z" fill="url(#heroInk)"/>
+    <g>
+    <path d="M945 290H${f.securityEnabled?2070:2620}L${f.securityEnabled?1934:2484} 600H945Q930 600 930 585V305Q930 290 945 290Z" fill="${rule}" opacity=".65"/>
+    <path data-raffle-half="left" d="M945 278H${f.securityEnabled?2070:2620}L${f.securityEnabled?1934:2484} 588H945Q930 588 930 573V293Q930 278 945 278Z" fill="url(#heroInk)"/>
 
     <rect x="972" y="317" width="16" height="246" rx="8" fill="${accent}"/>
-    <text x="1025" y="363" fill="${accent}" font-size="35" letter-spacing="5">MAXIMUM VALUE OF</text>
-    <text x="1010" y="559" fill="#ffffff" font-size="218" font-weight="700" letter-spacing="-6" data-max-width="1070">${escapeXml(f.prizeAmount)}</text>
+    <text x="1025" y="363" fill="${accent}" font-size="${f.securityEnabled?28:35}" letter-spacing="${f.securityEnabled?3:5}">MAXIMUM VALUE OF</text>
+    <text x="1010" y="559" fill="#ffffff" style="font-family:Arial,sans-serif" font-size="${f.securityEnabled?174:218}" font-weight="800" letter-spacing="-4" data-max-width="${f.securityEnabled?650:1070}">${escapeXml(f.prizeAmount)}</text>
     <g aria-label="50/50 raffle" data-diagonal-raffle="true">
-      <path data-raffle-half="right" d="M2644 320H2905Q2920 320 2920 335V615Q2920 630 2905 630H2508Z" fill="${dark}"/>
-      <text x="2350" y="510" text-anchor="middle" fill="#ffffff" style="font-family:Impact,Arial Black,sans-serif" font-size="224" letter-spacing="-4">50</text>
-      <text x="2740" y="552" text-anchor="middle" fill="#ffffff" style="font-family:Impact,Arial Black,sans-serif" font-size="224" letter-spacing="-4">50</text>
-      <text x="2350" y="559" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">RAFFLE</text>
-      <text x="2740" y="601" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">DRAW</text>
+      <path data-raffle-half="right" d="${f.securityEnabled?'M2094 320H2305Q2320 320 2320 335V615Q2320 630 2305 630H1958Z':'M2644 320H2905Q2920 320 2920 335V615Q2920 630 2905 630H2508Z'}" fill="${dark}"/>
+      <text x="${f.securityEnabled?1845:2350}" y="510" text-anchor="middle" fill="#ffffff" style="font-family:Arial,sans-serif;font-weight:900" font-size="${f.securityEnabled?194:224}" letter-spacing="-4">50</text>
+      <text x="${f.securityEnabled?2180:2740}" y="552" text-anchor="middle" fill="#ffffff" style="font-family:Arial,sans-serif;font-weight:900" font-size="${f.securityEnabled?194:224}" letter-spacing="-4">50</text>
+      <text x="${f.securityEnabled?1845:2350}" y="559" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">RAFFLE</text>
+      <text x="${f.securityEnabled?2180:2740}" y="601" text-anchor="middle" fill="${accent}" font-size="25" letter-spacing="6">DRAW</text>
     </g>
-    <text x="935" y="685" fill="${ink}" font-size="44" font-weight="700" data-max-width="1950">${escapeXml(f.drawDateLine)}</text>
-    <text x="935" y="742" fill="${muted}" font-size="35" data-max-width="1950">${escapeXml(f.drawLocationLine)}</text>
-    ${renderTextLines(desc,{x:935,y:795,lineHeight:34,fontSize:28,fill:muted,maxWidth:1240})}
-    <text x="2910" y="808" text-anchor="end" fill="${ink}" font-size="30" font-weight="700" data-max-width="680">${escapeXml(f.footerSummary)}</text>
-    <rect y="870" width="3000" height="130" fill="${mono?'#ffffff':'#fffcf0'}"/>
-    <path d="M0 870H3000" stroke="${rule}" stroke-width="2"/>
+    </g>
+    <text x="935" y="685" fill="${ink}" font-size="44" font-weight="700" data-max-width="${f.securityEnabled?1370:1950}">${escapeXml(f.drawDateLine)}</text>
+    <text x="935" y="742" fill="${muted}" font-size="35" data-max-width="${f.securityEnabled?1370:1950}">${escapeXml(f.drawLocationLine)}</text>
+    ${renderTextLines(desc,{x:935,y:f.securityEnabled?780:795,lineHeight:f.securityEnabled?30:34,fontSize:f.securityEnabled?25:28,fill:muted,maxWidth:1240})}
+    <text x="${f.securityEnabled?935:2910}" y="${f.securityEnabled?840:808}" text-anchor="${f.securityEnabled?'start':'end'}" fill="${ink}" font-size="${f.securityEnabled?23:30}" font-weight="700" data-max-width="${f.securityEnabled?1370:680}">${escapeXml(f.footerSummary)}</text>
+    <rect y="855" width="3000" height="145" fill="${mono?'#ffffff':'#fffcf0'}"/>
+    <path d="M0 855H3000" stroke="${rule}" stroke-width="2"/>
     <path d="M850 20V980" stroke="${muted}" stroke-width="3" stroke-dasharray="8 12" opacity=".65"/>
-    <g fill="${muted}" font-size="21" letter-spacing="3"><text x="55" y="907">PERMIT</text><text x="490" y="907">SERIAL</text><text x="935" y="907">PERMIT</text><text x="2260" y="907">SERIAL</text></g>
-    <g fill="${ink}" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(55 927)">${micrMarkup(f.permitNumber,390,44)}</g>
-    <g data-micr-number="stub" data-code-width="300" fill="${ink}" aria-label="Serial ${num}" transform="translate(490 927)">${micrMarkup(ticketNumber,300,44)}</g>
-    <g fill="${ink}" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(935 927)">${micrMarkup(f.permitNumber,900,44)}</g>
-    <g data-micr-number="main" data-code-width="650" fill="${ink}" aria-label="Serial ${num}" transform="translate(2260 927)">${micrMarkup(ticketNumber,650,44)}</g>
+    <g fill="${muted}" font-size="21" letter-spacing="3"><text x="55" y="887">PERMIT</text><text x="490" y="887">SERIAL</text><text x="935" y="887">PERMIT</text><text x="2260" y="887">SERIAL</text></g>
+    <g fill="${ink}" data-secure-permit="true" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(55 899)">${secureNumberMarkup(f.permitNumber,390,stripHeight)}</g>
+    <g data-secure-serial="stub" data-code-width="300" fill="${ink}" aria-label="Serial ${num}" transform="translate(490 899)">${secureNumberMarkup(ticketNumber,300,stripHeight)}</g>
+    <g fill="${ink}" data-secure-permit="true" aria-label="Permit ${escapeXml(f.permitNumber)}" transform="translate(935 899)">${secureNumberMarkup(f.permitNumber,900,stripHeight)}</g>
+    <g data-secure-serial="main" data-code-width="650" fill="${ink}" aria-label="Serial ${num}" transform="translate(2260 899)">${secureNumberMarkup(ticketNumber,650,stripHeight)}</g>
+    ${TicketSecurity.band(f,ticketNumber)}
     </g></svg>`;
   };
   const fitTextToWidth = (node) => { const maxWidth = Number(node.dataset.maxWidth || 0); if (!maxWidth || typeof node.getComputedTextLength !== "function") return; let fontSize = Number(node.getAttribute("font-size")) || Number(window.getComputedStyle(node).fontSize.replace("px", "")); while (node.getComputedTextLength() > maxWidth && fontSize > 8) { fontSize -= 1; node.setAttribute("font-size", String(fontSize)); } };
   const fitPreviewText = () => preview.querySelectorAll("[data-max-width]").forEach(fitTextToWidth);
   const updateThemeVars = (themeKey) => { const theme = THEME_PRESETS[themeKey] || THEME_PRESETS.yellow; document.documentElement.style.setProperty("--page-bg", theme.pageBg); document.documentElement.style.setProperty("--ticket-surface", theme.ticketSurface); document.documentElement.style.setProperty("--card-shadow", theme.shadow); };
   const syncPreviewPositionInput = () => { const count = state.generatedNumbers.length || 1; previewPositionInput.max = String(count); previewPositionInput.value = String(Math.min(state.previewIndex + 1, count)); };
-  const renderPreview = () => { const currentNumber = state.generatedNumbers[state.previewIndex] || state.generatedNumbers[0] || "0001"; preview.innerHTML = buildTicketSvg(state.form, currentNumber); fitPreviewText(); const total = state.generatedNumbers.length; previewMeta.textContent = `Preview ${Math.min(state.previewIndex + 1, total)} / ${total}`; currentNumberBadge.textContent = currentNumber; batchSummaryTitle.textContent = `Current Batch: ${total} ticket${total === 1 ? "" : "s"}`; batchSummaryText.textContent = state.batchMessage; prevBtn.disabled = total <= 1 || state.previewIndex === 0; nextBtn.disabled = total <= 1 || state.previewIndex >= total - 1; for (const button of [printCurrentBtn, printBatchBtn, exportCurrentBtn, exportBatchBtn]) button.disabled = total === 0 || outputBusy; syncPreviewPositionInput(); renderSheetPreview(); };
+  const renderPreview = () => { const currentNumber = state.generatedNumbers[state.previewIndex] || state.generatedNumbers[0] || "0001"; preview.innerHTML = buildTicketSvg(state.form, currentNumber); fitPreviewText(); const total = state.generatedNumbers.length; previewMeta.textContent = `Preview ${Math.min(state.previewIndex + 1, total)} / ${total}`; currentNumberBadge.textContent = currentNumber; batchSummaryTitle.textContent = `Current Batch: ${total} ticket${total === 1 ? "" : "s"}`; batchSummaryText.textContent = state.batchMessage; prevBtn.disabled = total <= 1 || state.previewIndex === 0; nextBtn.disabled = total <= 1 || state.previewIndex >= total - 1; for (const button of [printCurrentBtn, printBatchBtn, exportCurrentBtn, exportBatchBtn]) button.disabled = total === 0 || outputBusy; syncPreviewPositionInput(); renderSheetPreview(); TicketSecurity.schedule(); };
   const renderAll = ({ resetIndex = false } = {}) => { state.form = collectFormState(); updateThemeVars(state.form.backgroundTheme); const { numbers, message } = buildNumberList(state.form); state.generatedNumbers = numbers; state.batchMessage = message || "Generated 1 number."; if (resetIndex) state.previewIndex = 0; if (state.previewIndex >= state.generatedNumbers.length) state.previewIndex = Math.max(0, state.generatedNumbers.length - 1); renderPreview(); };
   const createSvgBlobUrl = (svgMarkup) => URL.createObjectURL(new Blob([svgMarkup], { type: "image/svg+xml;charset=utf-8" }));
-  const svgToPngBlob = (svgMarkup) => new Promise((resolve, reject) => { const objectUrl = createSvgBlobUrl(svgMarkup); const image = new Image(); image.onload = () => { URL.revokeObjectURL(objectUrl); const canvas = document.createElement("canvas"); canvas.width = 3000; canvas.height = 1000; const context = canvas.getContext("2d"); if (!context) { reject(new Error("The browser could not create a PNG canvas.")); return; } context.clearRect(0, 0, canvas.width, canvas.height); context.drawImage(image, 0, 0, canvas.width, canvas.height); canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("PNG export failed.")), "image/png"); }; image.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("SVG to image conversion failed. If you opened the page as a local file, try serving it through a local static server before exporting.")); }; image.src = objectUrl; });
+  const svgToPngBlob = (svgMarkup) => new Promise((resolve, reject) => { const objectUrl = createSvgBlobUrl(svgMarkup); const image = new Image(); image.onload = () => { URL.revokeObjectURL(objectUrl); const canvas = document.createElement("canvas"); canvas.width = 3000; canvas.height = Number(new DOMParser().parseFromString(svgMarkup,"image/svg+xml").documentElement.getAttribute("viewBox").split(/\s+/)[3]) || 1000; const context = canvas.getContext("2d"); if (!context) { reject(new Error("The browser could not create a PNG canvas.")); return; } context.clearRect(0, 0, canvas.width, canvas.height); context.drawImage(image, 0, 0, canvas.width, canvas.height); canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("PNG export failed.")), "image/png"); }; image.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("SVG to image conversion failed. If you opened the page as a local file, try serving it through a local static server before exporting.")); }; image.src = objectUrl; });
   const downloadBlob = (blob, filename) => { const link = document.createElement("a"); const url = URL.createObjectURL(blob); link.href = url; link.download = filename; document.body.append(link); link.click(); link.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 4000); };
   const getSnapshotForOutput = () => { renderAll(); return { form: { ...state.form }, numbers: state.generatedNumbers }; };
   const setOutputBusy = (busy) => {
@@ -310,7 +315,9 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
         const width=context.measureText(number).width;
         node.setAttribute("font-size", Math.min(size,size*Number(node.dataset.maxWidth)/Math.max(1,width)));
       });
-      svg.querySelectorAll("[data-micr-number]").forEach(node => { node.innerHTML=micrMarkup(number,Number(node.dataset.codeWidth),44); node.setAttribute("aria-label",`Serial ${number}`); });
+      svg.querySelectorAll("[data-secure-permit]").forEach((node,i) => { node.innerHTML=secureNumberMarkup(formState.permitNumber,i===0?390:900,numberStripHeight(formState,number)); });
+      svg.querySelectorAll("[data-secure-serial]").forEach(node => { node.innerHTML=secureNumberMarkup(number,Number(node.dataset.codeWidth),numberStripHeight(formState,number)); node.setAttribute("aria-label",`Serial ${number}`); });
+      if(formState.securityEnabled){const old=svg.querySelector("[data-auth-band]");old?.remove();svg.querySelector(".paper-simulation").insertAdjacentHTML("beforeend",TicketSecurity.band(formState,number));}
       svg.setAttribute("aria-label",`Raffle ticket ${number}`);
       return svg.outerHTML;
     };
@@ -356,6 +363,7 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     const snapshot = getSnapshotForOutput(); const renderTicket=prepareTicketRenderer({...snapshot.form, backgroundTheme:"white"}); cancelOutput = false; setOutputBusy(true);
     let frame;
     try {
+      TicketSecurity.validateNumbers(snapshot.form,numbers);
       document.getElementById("printFrame")?.remove();
       frame = document.createElement("iframe"); frame.id = "printFrame";
       frame.title = "Prepared raffle tickets";
@@ -370,10 +378,12 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
         .sheet{width:${layout.pw}mm;height:${layout.ph}mm;break-after:page;page-break-after:always;overflow:hidden}
         .sheet:last-child{break-after:auto;page-break-after:auto}svg{display:block}
         *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-      </style></head><body></body></html>`); doc.close();
+      </style></head><body>
+</body></html>`); doc.close();
       for(let start=0;start<numbers.length;start+=perPage) {
         if(cancelOutput) throw new Error("Print preparation cancelled.");
         const sheet=doc.createElement("section");sheet.className="sheet";
+        for(let j=start;j<Math.min(start+perPage,numbers.length);j++){if(cancelOutput)throw Error("Print preparation cancelled.");await TicketCrypto.ensure(snapshot.form,numbers[j]);}
         sheet.innerHTML=buildPrintSheet(snapshot.form,numbers,start,renderTicket);doc.body.append(sheet);
         actionStatus.textContent=`Preparing print: ${Math.min(start+perPage,numbers.length).toLocaleString()} / ${numbers.length.toLocaleString()} tickets…`;
         if(start % (perPage*5) === 0) await pause(0);
@@ -391,9 +401,11 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     if (outputBusy || !numbers.length) return;
     const snapshot = getSnapshotForOutput(); const renderTicket=prepareTicketRenderer({...snapshot.form, backgroundTheme:"white"}); cancelOutput=false; setOutputBusy(true);
     try {
+      TicketSecurity.validateNumbers(snapshot.form,numbers);
       for(let index=0;index<numbers.length;index++) {
         if(cancelOutput) throw new Error(`Export cancelled after ${index} downloads.`);
         const number=numbers[index];
+        await TicketCrypto.ensure(snapshot.form,number);
         const blob=await svgToPngBlob(renderTicket(number));
         downloadBlob(blob,`raffle-ticket-${index+1}-${sanitizeFilename(number)}.png`);
         actionStatus.textContent=`Sent ${index+1} / ${numbers.length} PNG downloads. Allow multiple downloads if the browser asks.`;
@@ -403,7 +415,7 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
     } catch(error) { actionStatus.textContent=error.message || "PNG export failed."; }
     finally { setOutputBusy(false); }
   };
-  form.addEventListener("input", (event) => { const target = event.target; if (!(target instanceof HTMLElement) || target === previewPositionInput) return; if(target.name === "ticketWidth") form.ticketHeight.value=(Number(target.value)/3).toFixed(2); if(target.name === "ticketHeight") form.ticketWidth.value=(Number(target.value)*3).toFixed(2); renderAll({ resetIndex: target.hasAttribute("data-batch-field") }); });
+  form.addEventListener("input", (event) => { const target = event.target; if (!(target instanceof HTMLElement) || target === previewPositionInput) return; if(target.name === "ticketWidth" || target.name === "securityEnabled") form.ticketHeight.value=(Number(form.ticketWidth.value)/TicketSecurity.ratio(collectFormState())).toFixed(2); if(target.name === "ticketHeight") form.ticketWidth.value=(Number(target.value)*TicketSecurity.ratio(collectFormState())).toFixed(2); renderAll({ resetIndex: target.hasAttribute("data-batch-field") }); });
   prevBtn.addEventListener("click", () => { if (state.previewIndex <= 0) return; state.previewIndex -= 1; renderPreview(); });
   nextBtn.addEventListener("click", () => { if (state.previewIndex >= state.generatedNumbers.length - 1) return; state.previewIndex += 1; renderPreview(); });
   previewPositionInput.addEventListener("change", () => { const total = state.generatedNumbers.length; const rawValue = sanitizeNumber(previewPositionInput.value, 1); state.previewIndex = Math.min(Math.max(rawValue, 1), total) - 1; renderPreview(); });
@@ -414,6 +426,8 @@ One (1) lucky winner will receive half of the proceeds of ticket sales</textarea
   document.querySelectorAll("[data-forward]").forEach(button => button.addEventListener("click",()=>document.getElementById(button.dataset.forward).click()));
   form.addEventListener("submit", event => event.preventDefault());
   renderAll({ resetIndex: true });
+  TicketSecurity.init();
 </script>
-</body>
+
+<script src="offline.js"></script></body>
 </html>
