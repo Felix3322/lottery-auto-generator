@@ -1,4 +1,4 @@
-importScripts('./vendor/qrcode.js');
+importScripts('./vendor/qrcode.js?v=20261022-2');
 const enc=new TextEncoder();
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
 let settings;

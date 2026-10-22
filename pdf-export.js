@@ -10,7 +10,7 @@ window.TicketPDF=(()=>{
   function pump(slot){if(closed||!slot.ready||slot.task||!queue.length)return;slot.task=queue.shift();slot.worker.postMessage({id:++id,number:slot.task.number});}
   const fail=error=>{closed=true;for(const slot of workers){slot.worker.terminate();slot.task?.reject(error);}for(const task of queue.splice(0))task.reject(error);};
   for(let i=0;i<Math.min(4,Math.max(1,(navigator.hardwareConcurrency||2)-1));i++){
-   const slot={worker:new Worker('./pdf-worker.js'),ready:false,task:null};workers.push(slot);
+   const slot={worker:new Worker('./pdf-worker.js?v=20261022-2'),ready:false,task:null};workers.push(slot);
    slot.worker.onmessage=({data})=>{if(data.error){fail(Error(data.error));return;}if(data.ready)slot.ready=true;else{slot.task.resolve(data);slot.task=null;}pump(slot);};
    slot.worker.onerror=()=>fail(Error('PDF signing worker failed. Retry with a locally served or HTTPS copy.'));
    slot.worker.postMessage({init:settings});
